@@ -74,9 +74,13 @@ public partial class App : Application
         // Core services - Singleton for application lifetime
         services.AddSingleton<LicenseValidator>();
         services.AddSingleton<ISettingsService, SettingsService>();
+        services.AddSingleton<GuideViewer.Core.Services.IImageStorageService, GuideViewer.Core.Services.ImageStorageService>();
 
         // UI services - Singleton for application lifetime
         services.AddSingleton<GuideViewer.Services.NavigationService>();
+
+        // Editor services - Transient (one per editor instance)
+        services.AddTransient<GuideViewer.Core.Services.IAutoSaveService, GuideViewer.Core.Services.AutoSaveService>();
 
         // Logging
         services.AddSingleton(Log.Logger);
