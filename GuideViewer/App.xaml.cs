@@ -105,6 +105,9 @@ public partial class App : Application
         services.AddSingleton<LicenseValidator>();
         services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<GuideViewer.Core.Services.IImageStorageService, GuideViewer.Core.Services.ImageStorageService>();
+        services.AddSingleton<GuideViewer.Core.Services.IGuideExportService, GuideViewer.Core.Services.GuideExportService>();
+        services.AddSingleton<GuideViewer.Core.Services.IGuideImportService, GuideViewer.Core.Services.GuideImportService>();
+        services.AddSingleton<GuideViewer.Core.Services.IDatabaseBackupService, GuideViewer.Core.Services.DatabaseBackupService>();
 
         // UI services - Singleton for application lifetime
         services.AddSingleton<GuideViewer.Services.NavigationService>();

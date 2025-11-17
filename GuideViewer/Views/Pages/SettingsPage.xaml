@@ -366,17 +366,162 @@
                         Visibility="{Binding HasProgress, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                 </StackPanel>
 
-                <!-- Coming Soon -->
-                <StackPanel Spacing="8" Margin="0,24,0,0">
+                <!-- Data Management Section (Admin Only) -->
+                <StackPanel x:Name="DataManagementSection" Spacing="12" Margin="0,24,0,0">
+                    <TextBlock Text="Data Management" Style="{StaticResource SubtitleTextBlockStyle}"/>
+
                     <TextBlock
-                        Text="Coming in future milestones:"
-                        Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="• SharePoint sync settings" Style="{StaticResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="• Offline mode configuration" Style="{StaticResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="• Data backup and restore" Style="{StaticResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="• Language preferences" Style="{StaticResource BodyTextBlockStyle}"/>
-                    </StackPanel>
+                        Text="Export, import, and backup your guides and database"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                    <!-- Export Guides -->
+                    <Border
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Export Guides" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock
+                                Text="Export guides to JSON format for sharing or backup"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                TextWrapping="Wrap"/>
+
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button
+                                    x:Name="ExportSingleGuideButton"
+                                    Click="ExportSingleGuideButton_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE8E5;" FontSize="16"/>
+                                        <TextBlock Text="Export Single Guide..."/>
+                                    </StackPanel>
+                                </Button>
+                                <Button
+                                    x:Name="ExportAllGuidesButton"
+                                    Click="ExportAllGuidesButton_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE8B5;" FontSize="16"/>
+                                        <TextBlock Text="Export All Guides..."/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Import Guides -->
+                    <Border
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Import Guides" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock
+                                Text="Import guides from JSON or ZIP files"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                TextWrapping="Wrap"/>
+
+                            <StackPanel Spacing="8">
+                                <Button
+                                    x:Name="ImportGuidesButton"
+                                    Click="ImportGuidesButton_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE8B6;" FontSize="16"/>
+                                        <TextBlock Text="Import Guides..."/>
+                                    </StackPanel>
+                                </Button>
+
+                                <ComboBox
+                                    x:Name="DuplicateHandlingComboBox"
+                                    Header="Duplicate Handling"
+                                    PlaceholderText="Select how to handle duplicates"
+                                    Width="300"
+                                    HorizontalAlignment="Left"
+                                    SelectedIndex="0">
+                                    <ComboBoxItem Content="Skip duplicates"/>
+                                    <ComboBoxItem Content="Overwrite existing"/>
+                                    <ComboBoxItem Content="Rename duplicates"/>
+                                </ComboBox>
+                            </StackPanel>
+
+                            <!-- Import Progress -->
+                            <ProgressRing
+                                x:Name="ImportProgressRing"
+                                Visibility="Collapsed"
+                                Width="24" Height="24"
+                                HorizontalAlignment="Left"/>
+
+                            <!-- Import Result -->
+                            <InfoBar
+                                x:Name="ImportResultInfoBar"
+                                Visibility="Collapsed"
+                                IsClosable="True"
+                                Closed="ImportResultInfoBar_Closed"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Database Backup -->
+                    <Border
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="Database Backup" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock
+                                Text="Create backups to protect your data or restore from a previous backup"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                TextWrapping="Wrap"/>
+
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button
+                                    x:Name="CreateBackupButton"
+                                    Click="CreateBackupButton_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE74E;" FontSize="16"/>
+                                        <TextBlock Text="Create Backup..."/>
+                                    </StackPanel>
+                                </Button>
+                                <Button
+                                    x:Name="RestoreBackupButton"
+                                    Click="RestoreBackupButton_Click"
+                                    Style="{StaticResource AccentButtonStyle}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE777;" FontSize="16"/>
+                                        <TextBlock Text="Restore Backup..."/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+
+                            <!-- Last Backup Info -->
+                            <TextBlock
+                                x:Name="LastBackupTextBlock"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+
+                            <!-- Backup Warning -->
+                            <InfoBar
+                                Title="Important"
+                                Message="Restoring a backup will replace your current database. The application will restart automatically. Make sure to create a backup of your current data first!"
+                                Severity="Warning"
+                                IsOpen="True"
+                                IsClosable="False"/>
+
+                            <!-- Backup Result -->
+                            <InfoBar
+                                x:Name="BackupResultInfoBar"
+                                Visibility="Collapsed"
+                                IsClosable="True"
+                                Closed="BackupResultInfoBar_Closed"/>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

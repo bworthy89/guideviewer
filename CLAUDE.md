@@ -18,10 +18,12 @@ GuideViewer is a Windows desktop application for service technicians to access a
 - ✅ **Milestone 2** (Guide Management) - **COMPLETE** (2025-11-17)
 - ✅ **Milestone 3** (Progress Tracking) - **COMPLETE** (2025-11-17)
   - Including Phase 5 (Admin Monitoring) ✅
+- 🚧 **Milestone 4** (Polish, Performance & Data Management) - **NOT STARTED**
+  - See [milestone4-todo.md](milestone4-todo.md) for detailed plan
 
 **Test Results**: 207/207 tests passing (24 M1 + 87 M2 + 96 M3)
 
-**Summary**: All three core milestones complete! The application now has full guide management, progress tracking, and admin oversight functionality.
+**Summary**: All three core milestones complete! The application now has full guide management, progress tracking, and admin oversight functionality. Ready to begin Milestone 4 with polish, performance optimization, and data management features.
 
 **Recent Fixes (2025-11-17)**:
 - Fixed button binding issues in GuidesPage (Start/View/Edit buttons)
@@ -344,7 +346,8 @@ Log.Error(exception, "Error occurred");
 
 ### Documentation
 - `spec.md` - Complete product specification
-- `todo.md` - Current milestone task list
+- `todo.md` - Milestone 3 task list (completed)
+- `milestone4-todo.md` - Milestone 4 task list (current)
 - `MILESTONE_3_PLAN.md` - Milestone 3 detailed plan
 - `CHANGELOG.md` - Completed milestones and features
 - `PATTERNS.md` - Development patterns and code examples
