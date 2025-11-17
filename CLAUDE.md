@@ -11,6 +11,7 @@ GuideViewer is a Windows desktop application for service technicians to access a
 **Architecture**: MVVM with dependency injection
 
 **Milestone 1 Status**: ✅ **COMPLETE!** (2025-11-16)
+**Milestone 2 Status**: 🔵 **IN PROGRESS** - 45% Complete (Phase 3 done)
 
 ## Quick Start
 
@@ -30,33 +31,62 @@ GuideViewer is a Windows desktop application for service technicians to access a
 ### Running Tests
 ```bash
 dotnet test GuideViewer.Tests/GuideViewer.Tests.csproj
-# Expected: 24/24 tests passing
+# Expected: 75/75 tests passing (24 Milestone 1 + 51 Milestone 2)
 ```
+
+### Sample Data
+On first run, the app automatically seeds 5 sample guides in 4 categories:
+- Network Installation (2 guides)
+- Server Setup (1 guide)
+- Software Deployment (1 guide)
+- Hardware Maintenance (1 guide)
+
+Delete `%LocalAppData%\GuideViewer\data.db` to reset and re-seed.
 
 ## What's New (Latest Session - 2025-11-16)
 
-### Major Achievements
-- ✅ **ActivationWindow** - Complete first-run product key activation flow
-- ✅ **MainWindow** - Full NavigationView with 4 pages and Mica background
-- ✅ **Role-based UI** - Admin/Technician visibility tested and working
-- ✅ **NavigationService** - Frame-based page routing system
-- ✅ **Value Converters** - InverseBooleanConverter, BooleanToVisibilityConverter
-- ✅ **Windows App SDK** - Unpackaged deployment configured
-- ✅ **WinUI 3 Issues** - All build and runtime issues resolved
+### Milestone 2 - Phase 3: Guide List UI ✅ **COMPLETE!**
 
-### Files Created (17 new files)
-- NavigationService, ActivationViewModel, MainViewModel
-- 4 placeholder pages (Home, Guides, Progress, Settings)
-- ActivationWindow with complete UI and logic
-- Value converters for data binding
-- KeyGenerator utility project
+**Major Achievements**:
+- ✅ **Data Layer** - Complete guide management infrastructure
+  - `Guide`, `Step`, `Category` entities with LiteDB persistence
+  - `GuideRepository` with search, filter, and category queries
+  - `CategoryRepository` with uniqueness enforcement
+  - 33 repository tests passing (19 Guide + 14 Category)
 
-### Known Issues Resolved
-1. ✅ WinUI 3 XAML compiler errors (invalid WPF properties)
-2. ✅ Windows App SDK runtime DLL not found (unpackaged deployment)
-3. ✅ C# 13 partial property syntax errors (reverted to field-based)
+- ✅ **Services Layer** - Image storage and auto-save
+  - `ImageStorageService` with validation (10MB max, PNG/JPG/JPEG/BMP)
+  - `AutoSaveService` with configurable intervals and dirty tracking
+  - 42 service tests passing (26 ImageStorage + 16 AutoSave)
 
-See `todo.md` for complete session details.
+- ✅ **Guide List UI** - Modern card-based interface
+  - Search by title, description, or category
+  - Category filtering with "All Categories" option
+  - Responsive grid layout (1-3 columns, ItemsRepeater)
+  - Role-based visibility (Edit/Delete for admins only)
+  - Delete confirmation flyout
+  - Loading states and contextual empty states
+  - Sample data seeding utility
+
+**Files Created** (Milestone 2):
+- **Entities**: `Guide.cs`, `Step.cs`, `Category.cs`
+- **Repositories**: `GuideRepository.cs`, `CategoryRepository.cs`
+- **Services**: `ImageStorageService.cs`, `AutoSaveService.cs`
+- **ViewModels**: `GuidesViewModel.cs` (393 lines)
+- **Pages**: Updated `GuidesPage.xaml` (252 lines), `GuidesPage.xaml.cs`
+- **Utilities**: `SampleDataSeeder.cs`
+- **Tests**: `GuideRepositoryTests.cs`, `CategoryRepositoryTests.cs`, `ImageStorageServiceTests.cs`, `AutoSaveServiceTests.cs`
+- **Converters**: `InverseBooleanToVisibilityConverter.cs`
+
+**Issues Found & Fixed During Testing**:
+1. ✅ DispatcherQueue access error (WinUI 3 limitation) - Fixed with DI injection
+2. ✅ Clear button not appearing - Fixed with `HasSearchQuery` computed property
+3. ✅ Delete flyout issues - Added cancel handler, increased width
+4. ✅ Empty state always visible - Fixed with `InverseBooleanToVisibilityConverter` + collection change notification
+
+**Total Progress**: 75/75 tests passing, 45% of Milestone 2 complete
+
+See `todo.md` for detailed phase breakdown and `CLAUDE.md` sections below for architecture details.
 
 ## Build & Development Commands
 
@@ -120,24 +150,26 @@ GuideViewer.sln
 
 **GuideViewer (UI Layer)**
 - WinUI 3 XAML views and code-behind
-- ViewModels using CommunityToolkit.Mvvm (`ActivationViewModel`, `MainViewModel`)
-- Pages: `HomePage`, `GuidesPage`, `ProgressPage`, `SettingsPage`
+- ViewModels using CommunityToolkit.Mvvm (`ActivationViewModel`, `MainViewModel`, `GuidesViewModel`)
+- Pages: `HomePage`, `GuidesPage` (full implementation), `ProgressPage`, `SettingsPage`
 - Services: `NavigationService` for page routing
-- Converters: `InverseBooleanConverter`, `BooleanToVisibilityConverter`
+- Converters: `InverseBooleanConverter`, `BooleanToVisibilityConverter`, `InverseBooleanToVisibilityConverter`
 - Windows: `ActivationWindow` (first-run), `MainWindow` (NavigationView + Mica)
 - Dependency injection configured in App.xaml.cs
 - Service access via `App.GetService<T>()`
+- DispatcherQueue injection for async UI updates
 
 **GuideViewer.Core (Business Logic)**
-- Services: `LicenseValidator`, `ISettingsService`/`SettingsService`
-- Models: `UserRole`, `LicenseInfo`, `AppSettings`
-- Utilities: `ProductKeyGenerator`
+- Services: `LicenseValidator`, `ISettingsService`/`SettingsService`, `IImageStorageService`/`ImageStorageService`, `IAutoSaveService`/`AutoSaveService`
+- Models: `UserRole`, `LicenseInfo`, `AppSettings`, `ImageValidationResult`, `ImageMetadata`
+- Utilities: `ProductKeyGenerator`, `SampleDataSeeder`
 - **No dependencies on Data or UI layers**
 
 **GuideViewer.Data (Data Access)**
-- `DatabaseService`: LiteDB initialization and management
-- Repository pattern: `IRepository<T>`, `Repository<T>`, `UserRepository`, `SettingsRepository`
-- Entities: `User`, `AppSetting`
+- `DatabaseService`: LiteDB initialization and management (including FileStorage for images)
+- Repository pattern: `IRepository<T>`, `Repository<T>`, `UserRepository`, `SettingsRepository`, `GuideRepository`, `CategoryRepository`
+- Entities: `User`, `AppSetting`, `Guide`, `Step`, `Category`
+- Indexes on Guide.Title, Guide.Category, Guide.UpdatedAt, Category.Name (unique)
 - **No dependencies on Core or UI layers**
 
 **Dependency Flow**: UI → Core → Data (strict layering enforced)
@@ -146,8 +178,8 @@ GuideViewer.sln
 
 ### Dependency Injection
 Services are registered in `App.xaml.cs`:
-- **Singleton**: `DatabaseService`, `LicenseValidator`, `ISettingsService`, `NavigationService`
-- **Transient**: `UserRepository`, `SettingsRepository`
+- **Singleton**: `DatabaseService`, `LicenseValidator`, `ISettingsService`, `NavigationService`, `ImageStorageService`
+- **Transient**: `UserRepository`, `SettingsRepository`, `GuideRepository`, `CategoryRepository`, `AutoSaveService`
 
 Access services anywhere:
 ```csharp
@@ -172,6 +204,8 @@ public interface IRepository<T>
 Specialized repositories inherit from `Repository<T>`:
 - `UserRepository`: Adds `GetCurrentUser()`, `UpdateLastLogin()`
 - `SettingsRepository`: Adds `GetValue(key)`, `SetValue(key, value)`
+- `GuideRepository`: Adds `Search(query)`, `GetByCategory(category)`, `GetRecentlyModified(count)`, `GetDistinctCategories()`
+- `CategoryRepository`: Adds `GetByName(name)`, `Exists(name, excludeId)`, `InsertIfNotExists(name)`, `EnsureCategory(name)`
 
 ### MVVM Pattern
 Use `CommunityToolkit.Mvvm` source generators for ViewModels:
@@ -240,15 +274,58 @@ public static class PageKeys
 ### Value Converters
 XAML converters registered in `App.xaml`:
 
-**InverseBooleanConverter**: Inverts boolean values
+**InverseBooleanConverter**: Inverts boolean values (bool → bool)
 ```xml
 IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"
 ```
 
-**BooleanToVisibilityConverter**: Converts bool to Visibility
+**BooleanToVisibilityConverter**: Converts bool to Visibility (True → Visible, False → Collapsed)
 ```xml
 Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"
 ```
+
+**InverseBooleanToVisibilityConverter**: Converts bool to inverse Visibility (True → Collapsed, False → Visible)
+```xml
+Visibility="{Binding HasGuides, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+```
+
+### Async UI Updates with DispatcherQueue
+WinUI 3 requires `DispatcherQueue` for updating UI from background threads. Inject via constructor:
+
+```csharp
+public partial class GuidesViewModel : ObservableObject
+{
+    private readonly DispatcherQueue _dispatcherQueue;
+
+    public GuidesViewModel(..., DispatcherQueue dispatcherQueue)
+    {
+        _dispatcherQueue = dispatcherQueue;
+    }
+
+    private async Task LoadDataAsync()
+    {
+        await Task.Run(() =>
+        {
+            var data = _repository.GetAll().ToList();
+
+            // Update UI on main thread
+            _dispatcherQueue.TryEnqueue(() =>
+            {
+                Items.Clear();
+                foreach (var item in data)
+                    Items.Add(item);
+            });
+        });
+    }
+}
+```
+
+Pass `Page.DispatcherQueue` to ViewModel:
+```csharp
+ViewModel = new GuidesViewModel(..., this.DispatcherQueue);
+```
+
+**Important**: `App.Current.DispatcherQueue` does NOT exist in WinUI 3 - use UI element's DispatcherQueue instead.
 
 ## Data Storage
 
@@ -257,8 +334,14 @@ Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConve
 **Collections**:
 - `users`: User authentication and role information
 - `settings`: Application settings (JSON serialized)
-- `guides`: Installation guides (to be implemented)
-- `progress`: User progress tracking (to be implemented)
+- `guides`: Installation guides with embedded steps (✅ implemented)
+- `categories`: Guide categories with icons and colors (✅ implemented)
+- `progress`: User progress tracking (to be implemented in Milestone 3)
+
+**FileStorage**: Images stored in LiteDB FileStorage (10MB max per image)
+- File ID format: `img_{Guid}`
+- Supported formats: PNG, JPG, JPEG, BMP
+- Automatically deleted when parent guide is deleted
 
 ### Settings Management
 Settings are JSON-serialized and cached in memory:
@@ -462,6 +545,91 @@ Use the `IsAdmin` property from `MainViewModel` with `BooleanToVisibilityConvert
 
 The menu item automatically shows/hides based on user role.
 
+### Implementing Search and Filter in ViewModels
+Pattern used in `GuidesViewModel` for searchable/filterable lists:
+
+```csharp
+public partial class GuidesViewModel : ObservableObject
+{
+    private readonly DispatcherQueue _dispatcherQueue;
+    private readonly GuideRepository _guideRepository;
+
+    [ObservableProperty]
+    private ObservableCollection<Guide> guides = new();
+
+    [ObservableProperty]
+    private string searchQuery = string.Empty;
+
+    [ObservableProperty]
+    private Category? selectedCategory;
+
+    // Computed property for Clear button visibility
+    public bool HasSearchQuery => !string.IsNullOrWhiteSpace(SearchQuery);
+
+    // Computed property for empty state visibility
+    public bool HasGuides => Guides.Count > 0;
+
+    public GuidesViewModel(..., DispatcherQueue dispatcherQueue)
+    {
+        _dispatcherQueue = dispatcherQueue;
+
+        // Subscribe to collection changes to update computed properties
+        Guides.CollectionChanged += (s, e) => OnPropertyChanged(nameof(HasGuides));
+    }
+
+    // Notify UI when SearchQuery changes
+    partial void OnSearchQueryChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSearchQuery));
+    }
+
+    [RelayCommand]
+    private async Task SearchAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            await Task.Run(() =>
+            {
+                // Perform search on background thread
+                var results = string.IsNullOrWhiteSpace(SearchQuery)
+                    ? _guideRepository.GetAll()
+                    : _guideRepository.Search(SearchQuery);
+
+                var resultsList = results.ToList();
+
+                // Update UI on main thread
+                _dispatcherQueue.TryEnqueue(() =>
+                {
+                    Guides.Clear();
+                    foreach (var guide in resultsList)
+                        Guides.Add(guide);
+                });
+            });
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ClearSearchAsync()
+    {
+        SearchQuery = string.Empty;  // Triggers OnSearchQueryChanged
+        await SearchAsync();
+    }
+}
+```
+
+**Key Patterns**:
+- Use `ObservableCollection` for UI-bound lists
+- Computed properties (`HasGuides`, `HasSearchQuery`) for dynamic visibility
+- Subscribe to `CollectionChanged` to notify computed properties
+- Use `partial void OnPropertyChanged` to chain notifications
+- Offload work to `Task.Run()`, update UI via `DispatcherQueue`
+- Set `IsLoading` in try/finally to ensure it's always reset
+
 ## Project Status
 
 **Milestone 1 (Foundation)**: ✅ **COMPLETE!** (2025-11-16)
@@ -497,57 +665,103 @@ The menu item automatically shows/hides based on user role.
 - ✅ User role persisted across app restarts
 - ✅ No crashes during normal operation
 
-### Next Milestone (2)
-- Guide creation and editing (Admin only)
-- Guide viewer with step-by-step navigation
-- Progress tracking and completion status
-- SharePoint synchronization
-- Offline-first data sync
+**Milestone 2 (Guide Data Model & Admin CRUD)**: 🔵 **IN PROGRESS** - 45% Complete
+
+### Completed Features (Phases 1-3)
+- ✅ **Data Layer** - Complete guide management infrastructure
+  - Guide, Step, Category entities with LiteDB persistence
+  - GuideRepository with search, filter, GetByCategory, GetRecentlyModified
+  - CategoryRepository with uniqueness enforcement and EnsureCategory
+  - 33 repository tests passing (19 Guide + 14 Category)
+
+- ✅ **Services Layer** - Image storage and auto-save
+  - ImageStorageService with 10MB max, PNG/JPG/JPEG/BMP validation
+  - AutoSaveService with configurable intervals and dirty tracking
+  - 42 service tests passing (26 ImageStorage + 16 AutoSave)
+
+- ✅ **Guide List UI** - Modern card-based interface
+  - Search by title, description, or category
+  - Category filtering with "All Categories" option
+  - Responsive grid layout (ItemsRepeater with UniformGridLayout)
+  - Role-based Edit/Delete buttons (admin only)
+  - Delete confirmation flyout
+  - Loading states and contextual empty states
+  - Sample data seeding (5 guides, 4 categories)
+  - GuidesViewModel with async search/filter logic
+
+**Testing Results**:
+- ✅ 75/75 unit tests passing
+- ✅ Search and filter working correctly
+- ✅ Role-based UI visibility verified (admin vs technician)
+- ✅ 4 runtime issues found and fixed during testing
+- ✅ Sample data seeds on first run
+
+### Remaining Work (Phases 4-6)
+- [ ] Phase 4: Guide Editor UI with RichEditBox (~35%)
+- [ ] Phase 5: Category Management & Detail View (~10%)
+- [ ] Phase 6: Testing & Polish (~10%)
 
 ## Important Files
 
 ### Documentation
 - `spec.md`: Complete product specification with requirements
-- `todo.md`: Milestone 1 task list with detailed progress (COMPLETE!)
+- `todo.md`: Milestone 2 task list with detailed progress (45% complete)
 - `CLAUDE.md`: This file - development guide and codebase documentation
 - `TEST_PRODUCT_KEYS.txt`: 10 test product keys (5 admin, 5 tech)
 
 ### Core Business Logic
 - `GuideViewer.Core/Services/LicenseValidator.cs`: Product key validation (HMAC-SHA256)
-- `GuideViewer.Core/Services/ISettingsService.cs`: Settings interface
-- `GuideViewer.Core/Services/SettingsService.cs`: Settings implementation
+- `GuideViewer.Core/Services/ISettingsService.cs` + `SettingsService.cs`: Settings persistence
+- `GuideViewer.Core/Services/IImageStorageService.cs` + `ImageStorageService.cs`: Image management (LiteDB FileStorage)
+- `GuideViewer.Core/Services/IAutoSaveService.cs` + `AutoSaveService.cs`: Auto-save mechanism
 - `GuideViewer.Core/Models/UserRole.cs`: Admin/Technician enum
 - `GuideViewer.Core/Models/LicenseInfo.cs`: License validation result
+- `GuideViewer.Core/Models/AppSettings.cs`: Settings model
+- `GuideViewer.Core/Models/ImageValidationResult.cs`: Image validation result
+- `GuideViewer.Core/Models/ImageMetadata.cs`: Image metadata model
 - `GuideViewer.Core/Utilities/ProductKeyGenerator.cs`: Key generation utility
+- `GuideViewer.Core/Utilities/SampleDataSeeder.cs`: Sample data generation
 
 ### Data Layer
-- `GuideViewer.Data/Services/DatabaseService.cs`: LiteDB initialization
+- `GuideViewer.Data/Services/DatabaseService.cs`: LiteDB initialization + indexes
 - `GuideViewer.Data/Repositories/Repository.cs`: Generic repository base
 - `GuideViewer.Data/Repositories/UserRepository.cs`: User data access
 - `GuideViewer.Data/Repositories/SettingsRepository.cs`: Settings data access
+- `GuideViewer.Data/Repositories/GuideRepository.cs`: Guide CRUD + search + filter
+- `GuideViewer.Data/Repositories/CategoryRepository.cs`: Category CRUD + uniqueness
 - `GuideViewer.Data/Entities/User.cs`: User entity
 - `GuideViewer.Data/Entities/AppSetting.cs`: Setting entity
+- `GuideViewer.Data/Entities/Guide.cs`: Guide entity with embedded steps
+- `GuideViewer.Data/Entities/Step.cs`: Step entity (embedded in Guide)
+- `GuideViewer.Data/Entities/Category.cs`: Category entity
 
 ### UI Layer
-- `GuideViewer/App.xaml.cs`: DI configuration, logging, first-run detection
+- `GuideViewer/App.xaml.cs`: DI configuration, logging, first-run detection, sample data seeding
 - `GuideViewer/App.xaml`: Application resources, value converters
 - `GuideViewer/MainWindow.xaml`: NavigationView + Mica background
 - `GuideViewer/MainWindow.xaml.cs`: Navigation setup, Mica implementation
 - `GuideViewer/Views/ActivationWindow.xaml`: Product key entry UI
 - `GuideViewer/Views/ActivationWindow.xaml.cs`: Activation logic
 - `GuideViewer/Views/Pages/HomePage.xaml`: Landing page
-- `GuideViewer/Views/Pages/GuidesPage.xaml`: Guides browser
+- `GuideViewer/Views/Pages/GuidesPage.xaml`: Full guide list with search/filter (252 lines)
+- `GuideViewer/Views/Pages/GuidesPage.xaml.cs`: Event handlers for search, filter, delete
 - `GuideViewer/Views/Pages/ProgressPage.xaml`: Progress dashboard
 - `GuideViewer/Views/Pages/SettingsPage.xaml`: Settings page
 - `GuideViewer/ViewModels/ActivationViewModel.cs`: Activation logic
 - `GuideViewer/ViewModels/MainViewModel.cs`: Main window + role detection
+- `GuideViewer/ViewModels/GuidesViewModel.cs`: Guide list with search/filter logic (409 lines)
 - `GuideViewer/Services/NavigationService.cs`: Page navigation
 - `GuideViewer/Converters/InverseBooleanConverter.cs`: Boolean inversion
 - `GuideViewer/Converters/BooleanToVisibilityConverter.cs`: Bool → Visibility
+- `GuideViewer/Converters/InverseBooleanToVisibilityConverter.cs`: Bool → Inverse Visibility
 
 ### Testing
 - `GuideViewer.Tests/Services/LicenseValidatorTests.cs`: 11 tests
 - `GuideViewer.Tests/Services/SettingsServiceTests.cs`: 13 tests
+- `GuideViewer.Tests/Services/ImageStorageServiceTests.cs`: 26 tests
+- `GuideViewer.Tests/Services/AutoSaveServiceTests.cs`: 16 tests
+- `GuideViewer.Tests/Repositories/GuideRepositoryTests.cs`: 19 tests
+- `GuideViewer.Tests/Repositories/CategoryRepositoryTests.cs`: 14 tests
 
 ### Utilities
 - `KeyGenerator/Program.cs`: Console app for generating product keys
