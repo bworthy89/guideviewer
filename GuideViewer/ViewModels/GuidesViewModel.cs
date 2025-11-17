@@ -282,8 +282,7 @@ public partial class GuidesViewModel : ObservableObject
         }
 
         Log.Information("Creating new guide");
-        // TODO: Navigate to GuideEditorPage with no parameter (create mode)
-        // _navigationService.NavigateTo(PageKeys.GuideEditor);
+        _navigationService.NavigateTo(PageKeys.GuideEditor);
     }
 
     /// <summary>
@@ -304,8 +303,7 @@ public partial class GuidesViewModel : ObservableObject
         }
 
         Log.Information("Editing guide: {GuideId} - {GuideTitle}", guide.Id, guide.Title);
-        // TODO: Navigate to GuideEditorPage with guide.Id parameter (edit mode)
-        // _navigationService.NavigateTo(PageKeys.GuideEditor, guide.Id);
+        _navigationService.NavigateTo(PageKeys.GuideEditor, guide.Id);
     }
 
     /// <summary>
@@ -320,8 +318,7 @@ public partial class GuidesViewModel : ObservableObject
         }
 
         Log.Information("Viewing guide: {GuideId} - {GuideTitle}", guide.Id, guide.Title);
-        // TODO: Navigate to GuideDetailPage with guide.Id parameter
-        // _navigationService.NavigateTo(PageKeys.GuideDetail, guide.Id);
+        _navigationService.NavigateTo(PageKeys.GuideDetail, guide.Id);
     }
 
     /// <summary>

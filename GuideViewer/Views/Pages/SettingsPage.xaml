@@ -49,6 +49,111 @@
                     </StackPanel>
                 </StackPanel>
 
+                <!-- Category Management Section (Admin Only) -->
+                <StackPanel Spacing="12" x:Name="CategoryManagementSection">
+                    <TextBlock Text="Category Management" Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <TextBlock
+                        Text="Manage guide categories with custom icons and colors"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Categories List -->
+                        <Border Grid.Column="0"
+                               BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                               BorderThickness="1"
+                               CornerRadius="8"
+                               Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                               MaxHeight="400"
+                               Margin="0,0,8,0">
+                            <ScrollViewer>
+                                <ItemsRepeater x:Name="CategoriesRepeater">
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="12,8"
+                                                 BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                                 BorderThickness="0,0,0,1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Icon Badge -->
+                                                <Border Grid.Column="0"
+                                                       Width="32"
+                                                       Height="32"
+                                                       CornerRadius="6"
+                                                       Margin="0,0,12,0"
+                                                       x:Name="CategoryBadge"
+                                                       Loaded="CategoryBadge_Loaded"
+                                                       Tag="{Binding Color}">
+                                                    <FontIcon Glyph="{Binding IconGlyph}"
+                                                             FontSize="16"
+                                                             Foreground="White"/>
+                                                </Border>
+
+                                                <!-- Category Info -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}"
+                                                              FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Description}"
+                                                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                              FontSize="12"
+                                                              TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+
+                                                <!-- Actions -->
+                                                <StackPanel Grid.Column="2"
+                                                           Orientation="Horizontal"
+                                                           Spacing="4">
+                                                    <Button Click="EditCategory_Click"
+                                                           Tag="{Binding}"
+                                                           ToolTipService.ToolTip="Edit category"
+                                                           Width="32"
+                                                           Height="32"
+                                                           Padding="0">
+                                                        <FontIcon Glyph="&#xE70F;" FontSize="14"/>
+                                                    </Button>
+                                                    <Button Click="DeleteCategory_Click"
+                                                           Tag="{Binding}"
+                                                           ToolTipService.ToolTip="Delete category"
+                                                           Width="32"
+                                                           Height="32"
+                                                           Padding="0">
+                                                        <FontIcon Glyph="&#xE74D;" FontSize="14" Foreground="Red"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                </ItemsRepeater>
+                            </ScrollViewer>
+                        </Border>
+
+                        <!-- Add Button -->
+                        <Button Grid.Column="1"
+                               Click="AddCategory_Click"
+                               VerticalAlignment="Top"
+                               ToolTipService.ToolTip="Add new category">
+                            <StackPanel Spacing="8">
+                                <FontIcon Glyph="&#xE710;" FontSize="20"/>
+                                <TextBlock Text="Add" FontSize="12"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <TextBlock Text="Note: Categories in use by guides cannot be deleted"
+                              Style="{StaticResource CaptionTextBlockStyle}"
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+
                 <!-- About Section -->
                 <StackPanel Spacing="12">
                     <TextBlock Text="About" Style="{StaticResource SubtitleTextBlockStyle}"/>

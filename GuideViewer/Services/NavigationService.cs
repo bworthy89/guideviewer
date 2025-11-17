@@ -94,6 +94,8 @@ public static class PageKeys
 {
     public const string Home = "Home";
     public const string Guides = "Guides";
+    public const string GuideEditor = "GuideEditor";
+    public const string GuideDetail = "GuideDetail";
     public const string Progress = "Progress";
     public const string Settings = "Settings";
 }

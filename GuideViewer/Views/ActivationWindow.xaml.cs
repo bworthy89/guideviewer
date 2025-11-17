@@ -132,6 +132,7 @@ public sealed partial class ActivationWindow : Window
     {
         // Close activation window and open main window
         var mainWindow = new MainWindow();
+        App.MainWindow = mainWindow;
         mainWindow.Activate();
         this.Close();
     }
