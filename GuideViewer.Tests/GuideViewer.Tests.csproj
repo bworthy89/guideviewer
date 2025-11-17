@@ -22,4 +22,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GuideViewer.Core\GuideViewer.Core.csproj" />
+  </ItemGroup>
+
 </Project>
