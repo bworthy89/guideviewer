@@ -14,6 +14,16 @@ public class Repository<T> : IRepository<T> where T : class
     protected readonly ILiteCollection<T> _collection;
 
     /// <summary>
+    /// Gets the underlying LiteDB database.
+    /// </summary>
+    protected LiteDatabase Database => _databaseService.Database;
+
+    /// <summary>
+    /// Gets the underlying LiteDB collection.
+    /// </summary>
+    protected ILiteCollection<T> Collection => _collection;
+
+    /// <summary>
     /// Initializes a new instance of the Repository class.
     /// </summary>
     /// <param name="databaseService">The database service.</param>

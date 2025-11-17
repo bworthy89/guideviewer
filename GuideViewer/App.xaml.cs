@@ -68,6 +68,8 @@ public partial class App : Application
         // Repositories - Transient as they're lightweight
         services.AddTransient<UserRepository>();
         services.AddTransient<SettingsRepository>();
+        services.AddTransient<GuideViewer.Data.Repositories.GuideRepository>();
+        services.AddTransient<GuideViewer.Data.Repositories.CategoryRepository>();
 
         // Core services - Singleton for application lifetime
         services.AddSingleton<LicenseValidator>();

@@ -5,7 +5,8 @@
       "Bash(dotnet sln:*)",
       "Bash(dotnet add:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []
