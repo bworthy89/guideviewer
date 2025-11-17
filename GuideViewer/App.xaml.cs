@@ -35,6 +35,30 @@ public partial class App : Application
 
         // Log application startup
         Log.Information("GuideViewer application starting...");
+
+        // Seed sample data for testing (only if database is empty)
+        SeedSampleDataIfNeeded();
+    }
+
+    /// <summary>
+    /// Seeds sample data into the database if it's empty.
+    /// </summary>
+    private void SeedSampleDataIfNeeded()
+    {
+        try
+        {
+            var guideRepository = Services.GetService<GuideViewer.Data.Repositories.GuideRepository>();
+            var categoryRepository = Services.GetService<GuideViewer.Data.Repositories.CategoryRepository>();
+
+            if (guideRepository != null && categoryRepository != null)
+            {
+                GuideViewer.Core.Utilities.SampleDataSeeder.SeedSampleData(categoryRepository, guideRepository);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to seed sample data");
+        }
     }
 
     /// <summary>
