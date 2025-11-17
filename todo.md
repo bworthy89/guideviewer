@@ -533,7 +533,50 @@ Milestone 2 focuses on building the core guide management system for administrat
 
 ## Blockers / Issues
 
-_Document any blockers or issues encountered during development_
+### Issues Found During Testing (Phase 3) ✅ **ALL RESOLVED**
+
+**Testing Date**: 2025-11-16
+
+**Issue #1: DispatcherQueue Access Error** (Build-time)
+- **Problem**: `CS1061: 'Application' does not contain a definition for 'DispatcherQueue'`
+- **Root Cause**: WinUI 3's `Application` class doesn't expose `DispatcherQueue` like WPF
+- **Solution**: Inject `DispatcherQueue` via constructor from `Page.DispatcherQueue`
+- **Files Modified**: `GuidesViewModel.cs`, `GuidesPage.xaml.cs`
+- **Commit**: `fd03558` - Fix DispatcherQueue access in GuidesViewModel
+
+**Issue #2: Clear Button Not Appearing** (Runtime)
+- **Problem**: Clear button visibility bound to `SearchQuery` (string) instead of boolean
+- **Root Cause**: `BooleanToVisibilityConverter` expects boolean, not string
+- **Solution**:
+  - Added `HasSearchQuery` computed property (`!string.IsNullOrWhiteSpace(SearchQuery)`)
+  - Added `OnSearchQueryChanged` partial method to notify UI
+  - Updated Clear button binding to `HasSearchQuery`
+- **Files Modified**: `GuidesViewModel.cs`, `GuidesPage.xaml`
+- **Commit**: `cedcfcf` - Fix UI issues in GuidesPage found during testing
+
+**Issue #3: Delete Flyout Issues** (Runtime)
+- **Problem 1**: Cancel button had no click handler (did nothing)
+- **Problem 2**: Flyout too narrow (250px)
+- **Solution**:
+  - Added `DeleteCancel_Click` event handler to dismiss flyout
+  - Increased `MinWidth` from 250 to 300 pixels
+- **Files Modified**: `GuidesPage.xaml`, `GuidesPage.xaml.cs`
+- **Commit**: `cedcfcf` - Fix UI issues in GuidesPage found during testing
+
+**Issue #4: Empty State Always Visible** (Runtime)
+- **Problem**: Empty state showed behind guides even when guides were present
+- **Root Cause 1**: Used `InverseBooleanConverter` which returns `bool`, not `Visibility` enum
+- **Root Cause 2**: `HasGuides` computed property didn't notify UI when `Guides` collection changed
+- **Solution**:
+  - Created `InverseBooleanToVisibilityConverter` (True→Collapsed, False→Visible)
+  - Added `Guides.CollectionChanged` subscription to notify `HasGuides` changes
+- **Files Modified**: `GuidesViewModel.cs`, `GuidesPage.xaml`, `App.xaml`
+- **Files Created**: `InverseBooleanToVisibilityConverter.cs`
+- **Commits**: `cedcfcf`, `bf6dcec`
+
+**Testing Status**: ✅ All issues verified fixed in Visual Studio 2022
+
+---
 
 ### Known Risks
 - **RichEditBox complexity**: WinUI 3 RichEditBox may have quirks with RTF formatting
@@ -568,5 +611,11 @@ _Document any blockers or issues encountered during development_
 
 ---
 
-**Last Updated**: 2025-11-16 (Phase 3 Complete)
+**Last Updated**: 2025-11-16 (Phase 3 Complete + Bug Fixes)
 **Next Review**: After Phase 4 completion (Guide Editor UI)
+
+**Recent Activity**:
+- Phase 3 completed: Guide List UI with search and filtering
+- Testing performed in Visual Studio 2022
+- 4 issues identified and resolved (DispatcherQueue, Clear button, Delete flyout, Empty state)
+- All fixes committed and pushed to GitHub
