@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GuideViewer.Core\GuideViewer.Core.csproj" />
+    <ProjectReference Include="..\GuideViewer.Data\GuideViewer.Data.csproj" />
   </ItemGroup>
 
 </Project>
