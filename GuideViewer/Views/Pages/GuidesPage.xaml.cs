@@ -2,6 +2,7 @@ using GuideViewer.Data.Entities;
 using GuideViewer.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using System.Linq;
 
 namespace GuideViewer.Views.Pages;
@@ -30,6 +31,15 @@ public sealed partial class GuidesPage : Page
 
         // Set name for ElementName bindings
         this.Name = "PageRoot";
+    }
+
+    protected override async void OnNavigatedTo(NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+
+        // Reload guides when navigating back to this page
+        // This ensures newly created/edited guides appear in the list
+        await ViewModel.LoadDataCommand.ExecuteAsync(null);
     }
 
     private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)

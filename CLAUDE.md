@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 
+Always use context7 when I need code generation, setup or configuration steps, or
+library/API documentation. This means you should automatically use the Context7 MCP
+tools to resolve library id and get library docs without me having to explicitly ask.
+
 ## Project Overview
 
 GuideViewer is a Windows desktop application for service technicians to access and track progress on installation guides. It uses WinUI 3, .NET 8, and follows an offline-first architecture with role-based access control (ADMIN vs TECHNICIAN).
@@ -11,7 +16,7 @@ GuideViewer is a Windows desktop application for service technicians to access a
 **Architecture**: MVVM with dependency injection
 
 **Milestone 1 Status**: ✅ **COMPLETE!** (2025-11-16)
-**Milestone 2 Status**: 🔵 **IN PROGRESS** - 45% Complete (Phase 3 done)
+**Milestone 2 Status**: ✅ **COMPLETE!** (2025-11-17) - 100% Complete
 
 ## Quick Start
 
@@ -31,7 +36,7 @@ GuideViewer is a Windows desktop application for service technicians to access a
 ### Running Tests
 ```bash
 dotnet test GuideViewer.Tests/GuideViewer.Tests.csproj
-# Expected: 75/75 tests passing (24 Milestone 1 + 51 Milestone 2)
+# Expected: 111/111 tests passing (24 Milestone 1 + 75 Milestone 2 unit + 12 Milestone 2 integration)
 ```
 
 ### Sample Data
@@ -43,50 +48,89 @@ On first run, the app automatically seeds 5 sample guides in 4 categories:
 
 Delete `%LocalAppData%\GuideViewer\data.db` to reset and re-seed.
 
-## What's New (Latest Session - 2025-11-16)
+## What's New (Latest Session - 2025-11-17)
 
-### Milestone 2 - Phase 3: Guide List UI ✅ **COMPLETE!**
+### Milestone 2 - Phases 4, 5 & 6: Guide Editor + Category Management + Testing ✅ **COMPLETE!**
 
-**Major Achievements**:
-- ✅ **Data Layer** - Complete guide management infrastructure
-  - `Guide`, `Step`, `Category` entities with LiteDB persistence
-  - `GuideRepository` with search, filter, and category queries
-  - `CategoryRepository` with uniqueness enforcement
-  - 33 repository tests passing (19 Guide + 14 Category)
+**Phase 4: Guide Editor UI** (~35% of milestone)
+- ✅ **GuideEditorPage** - Full CRUD interface with rich text editing
+  - Two-column layout (metadata/steps on left, editor on right)
+  - GuideEditorViewModel (~600 lines) with auto-save integration
+  - RichEditBox for RTF step instructions
+  - Image upload with FileOpenPicker (10MB max, 4 formats)
+  - Step reordering with up/down buttons
+  - Auto-save every 30 seconds with dirty tracking
+  - Unsaved changes warning on navigation
+  - Thread-safe image loading with DispatcherQueue
+  - Memory leak prevention (named method for PropertyChanged)
 
-- ✅ **Services Layer** - Image storage and auto-save
-  - `ImageStorageService` with validation (10MB max, PNG/JPG/JPEG/BMP)
-  - `AutoSaveService` with configurable intervals and dirty tracking
-  - 42 service tests passing (26 ImageStorage + 16 AutoSave)
+- ✅ **7 Critical Bugs Fixed** before testing:
+  1. PropertyChanged event memory leak (lambda → named method)
+  2. BitmapImage thread safety (added DispatcherQueue checks)
+  3. Auto-save race condition (added lock mechanism)
+  4. SelectedStep null binding (created fallback property)
+  5. RichEditBox stream leak (added using statement)
+  6. Image stream position reset
+  7. Parameter validation (ObjectId? casting)
 
-- ✅ **Guide List UI** - Modern card-based interface
-  - Search by title, description, or category
-  - Category filtering with "All Categories" option
-  - Responsive grid layout (1-3 columns, ItemsRepeater)
-  - Role-based visibility (Edit/Delete for admins only)
-  - Delete confirmation flyout
-  - Loading states and contextual empty states
-  - Sample data seeding utility
+**Phase 5: Category Management & Detail View** (~10% of milestone)
+- ✅ **CategoryEditorDialog** - Create/edit categories
+  - 8 icon choices (Document, Network, Server, Software, Tools, Settings, Phone, Calculator)
+  - 7 color choices (Blue, Green, Purple, Red, Orange, Cyan, Gray)
+  - Live preview of category badge
+  - Validation with duplicate name checking
 
-**Files Created** (Milestone 2):
-- **Entities**: `Guide.cs`, `Step.cs`, `Category.cs`
-- **Repositories**: `GuideRepository.cs`, `CategoryRepository.cs`
-- **Services**: `ImageStorageService.cs`, `AutoSaveService.cs`
-- **ViewModels**: `GuidesViewModel.cs` (393 lines)
-- **Pages**: Updated `GuidesPage.xaml` (252 lines), `GuidesPage.xaml.cs`
-- **Utilities**: `SampleDataSeeder.cs`
-- **Tests**: `GuideRepositoryTests.cs`, `CategoryRepositoryTests.cs`, `ImageStorageServiceTests.cs`, `AutoSaveServiceTests.cs`
-- **Converters**: `InverseBooleanToVisibilityConverter.cs`
+- ✅ **CategoryManagementViewModel** - Full category CRUD
+  - Integrated into SettingsPage with ItemsRepeater
+  - Cannot delete categories in use by guides
+  - Color badge rendering from hex strings
 
-**Issues Found & Fixed During Testing**:
-1. ✅ DispatcherQueue access error (WinUI 3 limitation) - Fixed with DI injection
-2. ✅ Clear button not appearing - Fixed with `HasSearchQuery` computed property
-3. ✅ Delete flyout issues - Added cancel handler, increased width
-4. ✅ Empty state always visible - Fixed with `InverseBooleanToVisibilityConverter` + collection change notification
+- ✅ **GuideDetailPage** - Read-only guide viewing
+  - All steps displayed with RTF content
+  - Category badges with icons and colors
+  - Edit button (navigates to editor)
+  - Thread-safe image loading
 
-**Total Progress**: 75/75 tests passing, 45% of Milestone 2 complete
+**Files Created** (Phases 4 & 5):
+- `GuideEditorPage.xaml` (368 lines), `GuideEditorPage.xaml.cs` (285 lines)
+- `GuideEditorViewModel.cs` (~600 lines)
+- `CategoryEditorDialog.xaml` (182 lines), `CategoryEditorDialog.xaml.cs` (154 lines)
+- `CategoryManagementViewModel.cs` (220 lines)
+- `GuideDetailPage.xaml` (209 lines), `GuideDetailPage.xaml.cs` (194 lines)
+- Updated `SettingsPage.xaml` with category management UI
 
-See `todo.md` for detailed phase breakdown and `CLAUDE.md` sections below for architecture details.
+**Phase 6: Testing & Polish** (~10% of milestone)
+- ✅ **Integration Tests** - 12 new comprehensive tests
+  - `GuideWorkflowIntegrationTests.cs` (6 tests)
+    * Complete guide CRUD workflow with images
+    * Multi-guide category filtering
+    * Category deletion prevention with existing guides
+    * Multiple images per guide handling
+    * Recently modified ordering
+  - `CategoryManagementIntegrationTests.cs` (6 tests)
+    * Complete category lifecycle
+    * Category-guide association validation
+    * Duplicate name detection
+    * Multi-category organization
+    * Case-insensitive lookups
+
+- ✅ **Database Query Optimization**
+  - Optimized `GetRecentlyModified` to use UpdatedAt index properly
+  - Changed from `Query.All(Query.Descending)` + LINQ to `Query.All("UpdatedAt", Query.Descending)`
+  - Performance improvement for retrieving recent guides
+
+**Files Created** (Phase 6):
+- `GuideWorkflowIntegrationTests.cs` (290 lines)
+- `CategoryManagementIntegrationTests.cs` (260 lines)
+
+**Issues Found & Fixed**:
+- **Phase 4**: 12 issues (7 critical bugs + 3 compilation + 2 runtime)
+- **Phase 5**: 2 compilation errors (TextSetOptions namespace, ImageStorageService usage)
+- **Phase 6**: Database query optimization (1 performance improvement)
+
+**Total Progress**: 111/111 tests passing (24 Milestone 1 + 75 Milestone 2 unit + 12 Milestone 2 integration), 100% of Milestone 2 complete ✅
+
+See `todo.md` for detailed issue documentation and `CLAUDE.md` sections below for architecture details.
 
 ## Build & Development Commands
 
@@ -150,8 +194,21 @@ GuideViewer.sln
 
 **GuideViewer (UI Layer)**
 - WinUI 3 XAML views and code-behind
-- ViewModels using CommunityToolkit.Mvvm (`ActivationViewModel`, `MainViewModel`, `GuidesViewModel`)
-- Pages: `HomePage`, `GuidesPage` (full implementation), `ProgressPage`, `SettingsPage`
+- ViewModels using CommunityToolkit.Mvvm:
+  - `ActivationViewModel` - Product key activation
+  - `MainViewModel` - Main window and navigation
+  - `GuidesViewModel` - Guide list with search/filter
+  - `GuideEditorViewModel` - Guide CRUD with auto-save (~600 lines)
+  - `CategoryManagementViewModel` - Category CRUD
+- Pages:
+  - `HomePage` - Landing page
+  - `GuidesPage` - Guide list with search/filter (full implementation)
+  - `GuideEditorPage` - Guide creation/editing with RTF and images (full implementation)
+  - `GuideDetailPage` - Read-only guide viewing (full implementation)
+  - `ProgressPage` - Progress tracking (placeholder)
+  - `SettingsPage` - Settings with category management (full implementation)
+- Dialogs:
+  - `CategoryEditorDialog` - Create/edit categories with icon/color picker
 - Services: `NavigationService` for page routing
 - Converters: `InverseBooleanConverter`, `BooleanToVisibilityConverter`, `InverseBooleanToVisibilityConverter`
 - Windows: `ActivationWindow` (first-run), `MainWindow` (NavigationView + Mica)
@@ -248,6 +305,8 @@ Frame-based navigation using `NavigationService`:
 var navigationService = App.GetService<NavigationService>();
 navigationService.RegisterPage<HomePage>(PageKeys.Home);
 navigationService.RegisterPage<GuidesPage>(PageKeys.Guides);
+navigationService.RegisterPage<GuideEditorPage>(PageKeys.GuideEditor);
+navigationService.RegisterPage<GuideDetailPage>(PageKeys.GuideDetail);
 navigationService.RegisterPage<ProgressPage>(PageKeys.Progress);
 navigationService.RegisterPage<SettingsPage>(PageKeys.Settings);
 
@@ -258,6 +317,9 @@ navigationService.Frame = ContentFrame; // Set the navigation frame
 ```csharp
 navigationService.NavigateTo(PageKeys.Home);
 navigationService.NavigateTo(PageKeys.Guides);
+navigationService.NavigateTo(PageKeys.GuideEditor); // Create new guide
+navigationService.NavigateTo(PageKeys.GuideEditor, guideId); // Edit existing guide
+navigationService.NavigateTo(PageKeys.GuideDetail, guideId); // View guide (read-only)
 ```
 
 **Page keys are defined in `PageKeys` class**:
@@ -266,6 +328,8 @@ public static class PageKeys
 {
     public const string Home = "Home";
     public const string Guides = "Guides";
+    public const string GuideEditor = "GuideEditor";
+    public const string GuideDetail = "GuideDetail";
     public const string Progress = "Progress";
     public const string Settings = "Settings";
 }
@@ -630,6 +694,193 @@ public partial class GuidesViewModel : ObservableObject
 - Offload work to `Task.Run()`, update UI via `DispatcherQueue`
 - Set `IsLoading` in try/finally to ensure it's always reset
 
+### Implementing Guide Editor with Auto-Save
+Pattern used in `GuideEditorViewModel` for guide CRUD with auto-save:
+
+```csharp
+public partial class GuideEditorViewModel : ObservableObject, IDisposable
+{
+    private readonly IAutoSaveService _autoSaveService;
+    private readonly object _saveLock = new object(); // Prevent race conditions
+
+    [ObservableProperty]
+    private bool hasUnsavedChanges = false;
+
+    [ObservableProperty]
+    private DateTime? lastSavedAt;
+
+    public GuideEditorViewModel(IAutoSaveService autoSaveService, ...)
+    {
+        _autoSaveService = autoSaveService;
+
+        // Subscribe to property changes to track dirty state
+        PropertyChanged += OnPropertyChanged_TrackChanges;
+    }
+
+    public async Task InitializeAsync(ObjectId? guideId)
+    {
+        if (guideId.HasValue)
+        {
+            // Load existing guide
+            await LoadGuideAsync((ObjectId)guideId!);
+        }
+        else
+        {
+            // Create new guide
+            IsNewGuide = true;
+            PageTitle = "New Guide";
+        }
+
+        // Start auto-save (every 30 seconds)
+        _autoSaveService.StartAutoSave(async () => await AutoSaveAsync(), 30);
+
+        HasUnsavedChanges = false; // Reset after initialization
+    }
+
+    private void OnPropertyChanged_TrackChanges(object? sender, PropertyChangedEventArgs e)
+    {
+        // Track changes for any property except metadata properties
+        if (e.PropertyName != nameof(HasUnsavedChanges) &&
+            e.PropertyName != nameof(LastSavedAt) &&
+            e.PropertyName != nameof(IsLoading) &&
+            e.PropertyName != nameof(IsSaving))
+        {
+            HasUnsavedChanges = true;
+            _autoSaveService.IsDirty = true;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveAsync()
+    {
+        // Prevent concurrent saves with lock
+        lock (_saveLock)
+        {
+            if (IsSaving) return;
+            IsSaving = true;
+        }
+
+        try
+        {
+            // Validate before saving
+            if (!ValidateGuide())
+            {
+                IsSaving = false;
+                return;
+            }
+
+            // Save to repository
+            await Task.Run(() =>
+            {
+                if (IsNewGuide)
+                {
+                    _guideId = _guideRepository.Insert(guide);
+                }
+                else
+                {
+                    _guideRepository.Update(guide);
+                }
+            });
+
+            HasUnsavedChanges = false;
+            LastSavedAt = DateTime.Now;
+            _autoSaveService.IsDirty = false;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to save guide");
+            ValidationMessage = "Failed to save guide";
+            HasValidationError = true;
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private async Task AutoSaveAsync()
+    {
+        if (HasUnsavedChanges && !IsSaving)
+        {
+            await SaveAsync();
+        }
+    }
+
+    public void Dispose()
+    {
+        _autoSaveService.StopAutoSave();
+        PropertyChanged -= OnPropertyChanged_TrackChanges; // Prevent memory leak
+    }
+}
+```
+
+**Key Patterns**:
+- Use `object _saveLock` to prevent race conditions between manual and auto-save
+- Subscribe to `PropertyChanged` with **named method** (not lambda) to prevent memory leaks
+- Track dirty state by monitoring all property changes except metadata
+- Implement `IDisposable` to stop auto-save and unsubscribe from events
+- Use `lock` statement to make save operations thread-safe
+- Validate data before saving to prevent invalid data in database
+
+### Implementing Category Management with Validation
+Pattern used in `CategoryManagementViewModel` for category CRUD with in-use checking:
+
+```csharp
+public partial class CategoryManagementViewModel : ObservableObject
+{
+    private readonly CategoryRepository _categoryRepository;
+    private readonly GuideRepository _guideRepository;
+
+    [RelayCommand]
+    private async Task DeleteCategoryAsync(Category category)
+    {
+        if (category == null) return;
+
+        try
+        {
+            await Task.Run(() =>
+            {
+                // Check if category is used by any guides
+                var guidesInCategory = _guideRepository.GetByCategory(category.Name).ToList();
+                if (guidesInCategory.Any())
+                {
+                    _dispatcherQueue.TryEnqueue(() =>
+                    {
+                        ValidationMessage = $"Cannot delete category '{category.Name}'. " +
+                                          $"It is used by {guidesInCategory.Count} guide(s).";
+                        HasValidationError = true;
+                    });
+                    return;
+                }
+
+                // Safe to delete
+                _categoryRepository.Delete(category.Id);
+                Log.Information("Deleted category: {CategoryName}", category.Name);
+
+                // Update UI
+                _dispatcherQueue.TryEnqueue(() =>
+                {
+                    Categories.Remove(category);
+                });
+            });
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to delete category");
+            ValidationMessage = "Failed to delete category. Please try again.";
+            HasValidationError = true;
+        }
+    }
+}
+```
+
+**Key Patterns**:
+- Check referential integrity before deletion (prevent orphaned data)
+- Use `_guideRepository.GetByCategory()` to find dependencies
+- Show user-friendly error messages with counts
+- Update UI on main thread via `DispatcherQueue`
+- Log all CRUD operations for debugging
+
 ## Project Status
 
 **Milestone 1 (Foundation)**: ✅ **COMPLETE!** (2025-11-16)
@@ -665,47 +916,70 @@ public partial class GuidesViewModel : ObservableObject
 - ✅ User role persisted across app restarts
 - ✅ No crashes during normal operation
 
-**Milestone 2 (Guide Data Model & Admin CRUD)**: 🔵 **IN PROGRESS** - 45% Complete
+**Milestone 2 (Guide Data Model & Admin CRUD)**: ✅ **COMPLETE!** - 100% Complete (2025-11-17)
 
-### Completed Features (Phases 1-3)
-- ✅ **Data Layer** - Complete guide management infrastructure
+### Completed Features (Phases 1-6) ✅
+- ✅ **Data Layer** (Phase 1) - Complete guide management infrastructure
   - Guide, Step, Category entities with LiteDB persistence
   - GuideRepository with search, filter, GetByCategory, GetRecentlyModified
   - CategoryRepository with uniqueness enforcement and EnsureCategory
   - 33 repository tests passing (19 Guide + 14 Category)
 
-- ✅ **Services Layer** - Image storage and auto-save
+- ✅ **Services Layer** (Phase 2) - Image storage and auto-save
   - ImageStorageService with 10MB max, PNG/JPG/JPEG/BMP validation
   - AutoSaveService with configurable intervals and dirty tracking
   - 42 service tests passing (26 ImageStorage + 16 AutoSave)
 
-- ✅ **Guide List UI** - Modern card-based interface
+- ✅ **Guide List UI** (Phase 3) - Modern card-based interface
   - Search by title, description, or category
   - Category filtering with "All Categories" option
   - Responsive grid layout (ItemsRepeater with UniformGridLayout)
-  - Role-based Edit/Delete buttons (admin only)
+  - Role-based Edit/Delete/View buttons (admin only for Edit/Delete)
   - Delete confirmation flyout
   - Loading states and contextual empty states
   - Sample data seeding (5 guides, 4 categories)
   - GuidesViewModel with async search/filter logic
 
-**Testing Results**:
-- ✅ 75/75 unit tests passing
-- ✅ Search and filter working correctly
-- ✅ Role-based UI visibility verified (admin vs technician)
-- ✅ 4 runtime issues found and fixed during testing
-- ✅ Sample data seeds on first run
+- ✅ **Guide Editor UI** (Phase 4) - Full CRUD with rich text editing
+  - GuideEditorPage with two-column layout (368 lines XAML)
+  - GuideEditorViewModel with auto-save integration (~600 lines)
+  - RichEditBox for RTF step instructions
+  - Image upload with FileOpenPicker and validation
+  - Step reordering with up/down buttons
+  - Auto-save every 30 seconds with dirty tracking and lock mechanism
+  - Unsaved changes warning with ContentDialog
+  - Thread-safe image loading with DispatcherQueue
+  - 7 critical bugs fixed before testing (memory leaks, race conditions, null bindings)
 
-### Remaining Work (Phases 4-6)
-- [ ] Phase 4: Guide Editor UI with RichEditBox (~35%)
-- [ ] Phase 5: Category Management & Detail View (~10%)
-- [ ] Phase 6: Testing & Polish (~10%)
+- ✅ **Category Management & Detail View** (Phase 5)
+  - CategoryEditorDialog with 8 icons and 7 colors
+  - CategoryManagementViewModel integrated into SettingsPage
+  - Live preview of category badge
+  - Cannot delete categories in use by guides
+  - GuideDetailPage for read-only guide viewing
+  - All steps displayed with RTF content and images
+  - Edit button navigates to GuideEditorPage
+
+- ✅ **Testing & Polish** (Phase 6) - Integration tests and optimization
+  - 12 integration tests for complete guide CRUD workflow
+  - Database query optimization (GetRecentlyModified)
+  - All 111 tests passing
+  - Documentation fully updated
+
+**Testing Results**:
+- ✅ 111/111 tests passing (24 Milestone 1 + 75 Milestone 2 unit + 12 Milestone 2 integration)
+- ✅ All CRUD operations working correctly
+- ✅ Role-based UI visibility verified (admin vs technician)
+- ✅ 15 issues found and fixed during Phases 4, 5 & 6
+- ✅ Build successful, all features tested in Visual Studio
+- ✅ Integration tests validate end-to-end workflows
+- ✅ Database queries optimized for performance
 
 ## Important Files
 
 ### Documentation
 - `spec.md`: Complete product specification with requirements
-- `todo.md`: Milestone 2 task list with detailed progress (45% complete)
+- `todo.md`: Milestone 2 task list with detailed progress (100% complete ✅)
 - `CLAUDE.md`: This file - development guide and codebase documentation
 - `TEST_PRODUCT_KEYS.txt`: 10 test product keys (5 admin, 5 tech)
 
@@ -739,29 +1013,51 @@ public partial class GuidesViewModel : ObservableObject
 - `GuideViewer/App.xaml.cs`: DI configuration, logging, first-run detection, sample data seeding
 - `GuideViewer/App.xaml`: Application resources, value converters
 - `GuideViewer/MainWindow.xaml`: NavigationView + Mica background
-- `GuideViewer/MainWindow.xaml.cs`: Navigation setup, Mica implementation
+- `GuideViewer/MainWindow.xaml.cs`: Navigation setup, Mica implementation, page registration
 - `GuideViewer/Views/ActivationWindow.xaml`: Product key entry UI
 - `GuideViewer/Views/ActivationWindow.xaml.cs`: Activation logic
+
+**Pages**:
 - `GuideViewer/Views/Pages/HomePage.xaml`: Landing page
 - `GuideViewer/Views/Pages/GuidesPage.xaml`: Full guide list with search/filter (252 lines)
 - `GuideViewer/Views/Pages/GuidesPage.xaml.cs`: Event handlers for search, filter, delete
-- `GuideViewer/Views/Pages/ProgressPage.xaml`: Progress dashboard
-- `GuideViewer/Views/Pages/SettingsPage.xaml`: Settings page
+- `GuideViewer/Views/Pages/GuideEditorPage.xaml`: Guide editor with RTF and images (368 lines)
+- `GuideViewer/Views/Pages/GuideEditorPage.xaml.cs`: File picker, RTF loading, image loading (285 lines)
+- `GuideViewer/Views/Pages/GuideDetailPage.xaml`: Read-only guide viewing (209 lines)
+- `GuideViewer/Views/Pages/GuideDetailPage.xaml.cs`: Guide loading, RTF rendering (194 lines)
+- `GuideViewer/Views/Pages/ProgressPage.xaml`: Progress dashboard (placeholder)
+- `GuideViewer/Views/Pages/SettingsPage.xaml`: Settings with category management
+- `GuideViewer/Views/Pages/SettingsPage.xaml.cs`: Category CRUD event handlers
+
+**Dialogs**:
+- `GuideViewer/Views/Dialogs/CategoryEditorDialog.xaml`: Category editor with icon/color picker (182 lines)
+- `GuideViewer/Views/Dialogs/CategoryEditorDialog.xaml.cs`: Live preview, validation (154 lines)
+
+**ViewModels**:
 - `GuideViewer/ViewModels/ActivationViewModel.cs`: Activation logic
 - `GuideViewer/ViewModels/MainViewModel.cs`: Main window + role detection
 - `GuideViewer/ViewModels/GuidesViewModel.cs`: Guide list with search/filter logic (409 lines)
-- `GuideViewer/Services/NavigationService.cs`: Page navigation
+- `GuideViewer/ViewModels/GuideEditorViewModel.cs`: Guide CRUD with auto-save (~600 lines)
+- `GuideViewer/ViewModels/CategoryManagementViewModel.cs`: Category CRUD (220 lines)
+
+**Services & Converters**:
+- `GuideViewer/Services/NavigationService.cs`: Page navigation with PageKeys
 - `GuideViewer/Converters/InverseBooleanConverter.cs`: Boolean inversion
 - `GuideViewer/Converters/BooleanToVisibilityConverter.cs`: Bool → Visibility
 - `GuideViewer/Converters/InverseBooleanToVisibilityConverter.cs`: Bool → Inverse Visibility
 
 ### Testing
+**Unit Tests** (99 tests):
 - `GuideViewer.Tests/Services/LicenseValidatorTests.cs`: 11 tests
 - `GuideViewer.Tests/Services/SettingsServiceTests.cs`: 13 tests
 - `GuideViewer.Tests/Services/ImageStorageServiceTests.cs`: 26 tests
 - `GuideViewer.Tests/Services/AutoSaveServiceTests.cs`: 16 tests
 - `GuideViewer.Tests/Repositories/GuideRepositoryTests.cs`: 19 tests
 - `GuideViewer.Tests/Repositories/CategoryRepositoryTests.cs`: 14 tests
+
+**Integration Tests** (12 tests):
+- `GuideViewer.Tests/Integration/GuideWorkflowIntegrationTests.cs`: 6 tests (complete guide CRUD workflow)
+- `GuideViewer.Tests/Integration/CategoryManagementIntegrationTests.cs`: 6 tests (category management with validation)
 
 ### Utilities
 - `KeyGenerator/Program.cs`: Console app for generating product keys

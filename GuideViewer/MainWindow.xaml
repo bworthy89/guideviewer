@@ -50,7 +50,7 @@
                 <NavigationViewItem
                     x:Name="NewGuideNavItem"
                     Content="New Guide"
-                    Tag="NewGuide"
+                    Tag="GuideEditor"
                     Visibility="{Binding IsAdmin, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE710;"/>

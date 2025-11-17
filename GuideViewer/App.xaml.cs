@@ -15,6 +15,11 @@ public partial class App : Application
     private Window? m_window;
 
     /// <summary>
+    /// Gets the main application window.
+    /// </summary>
+    public static Window? MainWindow { get; internal set; }
+
+    /// <summary>
     /// Gets the service provider for dependency injection.
     /// </summary>
     public IServiceProvider Services { get; }
@@ -129,12 +134,14 @@ public partial class App : Application
                 // User already activated, show main window
                 Log.Information("User already activated with role: {Role}", currentUser.Role);
                 m_window = new MainWindow();
+                MainWindow = m_window;
             }
             else
             {
                 // First run, show activation window
                 Log.Information("First run detected, showing activation window");
                 m_window = new Views.ActivationWindow();
+                MainWindow = m_window;
             }
 
             m_window.Activate();

@@ -63,10 +63,9 @@ public class GuideRepository : Repository<Guide>
     /// <returns>Recently modified guides ordered by update date (newest first).</returns>
     public IEnumerable<Guide> GetRecentlyModified(int count = 10)
     {
+        // Use Query.All with descending order to leverage the UpdatedAt index
         return Collection
-            .Find(Query.All(Query.Descending))
-            .OrderByDescending(g => g.UpdatedAt)
-            .Take(count);
+            .Find(Query.All("UpdatedAt", Query.Descending), limit: count);
     }
 
     /// <summary>

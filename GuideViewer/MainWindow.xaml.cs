@@ -60,6 +60,8 @@ public sealed partial class MainWindow : Window
     {
         _navigationService.RegisterPage<HomePage>(PageKeys.Home);
         _navigationService.RegisterPage<GuidesPage>(PageKeys.Guides);
+        _navigationService.RegisterPage<GuideEditorPage>(PageKeys.GuideEditor);
+        _navigationService.RegisterPage<GuideDetailPage>(PageKeys.GuideDetail);
         _navigationService.RegisterPage<ProgressPage>(PageKeys.Progress);
         _navigationService.RegisterPage<SettingsPage>(PageKeys.Settings);
     }
