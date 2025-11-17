@@ -64,6 +64,9 @@ public partial class GuidesViewModel : ObservableObject
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         _dispatcherQueue = dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));
 
+        // Subscribe to collection changes to update HasGuides property
+        Guides.CollectionChanged += (s, e) => OnPropertyChanged(nameof(HasGuides));
+
         // Check if current user is admin
         LoadUserRole();
 
