@@ -1,0 +1,51 @@
+<Page
+    x:Class="GuideViewer.Views.Pages.GuidesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+            <TextBlock
+                Text="Installation Guides"
+                Style="{StaticResource TitleLargeTextBlockStyle}"/>
+            <TextBlock
+                Text="Browse and follow step-by-step installation guides"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        </StackPanel>
+
+        <!-- Content Area -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="16">
+                <InfoBar
+                    Title="No Guides Available"
+                    Message="Guides will appear here once they are created by an administrator."
+                    Severity="Informational"
+                    IsOpen="True"
+                    IsClosable="False"/>
+
+                <!-- Placeholder for future guide list -->
+                <TextBlock
+                    Text="Coming in Milestone 2:"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
+                    Margin="0,24,0,8"/>
+
+                <StackPanel Spacing="8">
+                    <TextBlock Text="• View all available installation guides" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock Text="• Search and filter guides by category" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock Text="• Track completion status" Style="{StaticResource BodyTextBlockStyle}"/>
+                    <TextBlock Text="• Mark steps as complete" Style="{StaticResource BodyTextBlockStyle}"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

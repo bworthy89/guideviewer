@@ -4,16 +4,92 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:GuideViewer.ViewModels"
     mc:Ignorable="d"
-    Title="GuideViewer"
-    MinWidth="800"
-    MinHeight="600">
+    d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
 
     <Grid>
-        <TextBlock
-            Text="Welcome to GuideViewer!"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Style="{StaticResource TitleTextBlockStyle}"/>
+        <NavigationView
+            x:Name="NavigationViewControl"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="False"
+            PaneDisplayMode="Left"
+            SelectionChanged="NavigationView_SelectionChanged">
+
+            <NavigationView.MenuItems>
+                <!-- Home -->
+                <NavigationViewItem
+                    x:Name="HomeNavItem"
+                    Content="Home"
+                    Tag="Home"
+                    Icon="Home"/>
+
+                <!-- Guides -->
+                <NavigationViewItem
+                    x:Name="GuidesNavItem"
+                    Content="Guides"
+                    Tag="Guides">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8F1;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <!-- Progress Dashboard -->
+                <NavigationViewItem
+                    x:Name="ProgressNavItem"
+                    Content="Progress"
+                    Tag="Progress">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE9D9;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItemSeparator/>
+
+                <!-- Admin Only: New Guide -->
+                <NavigationViewItem
+                    x:Name="NewGuideNavItem"
+                    Content="New Guide"
+                    Tag="NewGuide"
+                    Visibility="{Binding IsAdmin, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE710;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <NavigationView.FooterMenuItems>
+                <!-- Settings -->
+                <NavigationViewItem
+                    x:Name="SettingsNavItem"
+                    Content="Settings"
+                    Tag="Settings">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE713;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.FooterMenuItems>
+
+            <NavigationView.PaneFooter>
+                <!-- User Role Badge -->
+                <StackPanel Orientation="Horizontal" Spacing="8" Padding="16,8">
+                    <PersonPicture Width="32" Height="32"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock
+                            Text="{Binding RoleDisplayName, Mode=OneWay}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            FontWeight="SemiBold"/>
+                        <TextBlock
+                            Text="{Binding CurrentUserRole, Mode=OneWay}"
+                            Style="{StaticResource CaptionTextBlockStyle}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            FontSize="10"/>
+                    </StackPanel>
+                </StackPanel>
+            </NavigationView.PaneFooter>
+
+            <!-- Content Frame -->
+            <Frame x:Name="ContentFrame"/>
+        </NavigationView>
     </Grid>
 </Window>

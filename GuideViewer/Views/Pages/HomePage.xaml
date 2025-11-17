@@ -1,0 +1,40 @@
+<Page
+    x:Class="GuideViewer.Views.Pages.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Spacing="24">
+
+            <FontIcon
+                Glyph="&#xE80F;"
+                FontSize="64"
+                Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+
+            <TextBlock
+                Text="Welcome to GuideViewer"
+                Style="{StaticResource TitleLargeTextBlockStyle}"
+                HorizontalAlignment="Center"/>
+
+            <TextBlock
+                Text="Select a guide from the navigation menu to get started"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                HorizontalAlignment="Center"/>
+
+            <InfoBar
+                Title="Getting Started"
+                Message="Browse guides, track your progress, and manage settings from the menu."
+                Severity="Informational"
+                IsOpen="True"
+                IsClosable="False"
+                MaxWidth="500"/>
+        </StackPanel>
+    </Grid>
+</Page>

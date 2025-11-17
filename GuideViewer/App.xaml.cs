@@ -15,11 +15,6 @@ public partial class App : Application
     private Window? m_window;
 
     /// <summary>
-    /// Gets the current application instance.
-    /// </summary>
-    public static new App Current => (App)Application.Current;
-
-    /// <summary>
     /// Gets the service provider for dependency injection.
     /// </summary>
     public IServiceProvider Services { get; }
@@ -78,6 +73,9 @@ public partial class App : Application
         services.AddSingleton<LicenseValidator>();
         services.AddSingleton<ISettingsService, SettingsService>();
 
+        // UI services - Singleton for application lifetime
+        services.AddSingleton<GuideViewer.Services.NavigationService>();
+
         // Logging
         services.AddSingleton(Log.Logger);
 
@@ -92,12 +90,28 @@ public partial class App : Application
     {
         try
         {
-            m_window = new MainWindow();
+            // Check if user is already activated
+            var userRepository = GetService<UserRepository>();
+            var currentUser = userRepository.GetCurrentUser();
+
+            if (currentUser != null)
+            {
+                // User already activated, show main window
+                Log.Information("User already activated with role: {Role}", currentUser.Role);
+                m_window = new MainWindow();
+            }
+            else
+            {
+                // First run, show activation window
+                Log.Information("First run detected, showing activation window");
+                m_window = new Views.ActivationWindow();
+            }
+
             m_window.Activate();
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Failed to launch main window");
+            Log.Error(ex, "Failed to launch application window");
             throw;
         }
     }
@@ -107,7 +121,7 @@ public partial class App : Application
     /// </summary>
     public static T GetService<T>() where T : class
     {
-        return Current.Services.GetRequiredService<T>();
+        return ((App)Application.Current).Services.GetRequiredService<T>();
     }
 }
 

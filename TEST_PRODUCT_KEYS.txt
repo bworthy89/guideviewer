@@ -1,0 +1,29 @@
+GuideViewer Test Product Keys
+==============================
+
+Generated on: 2025-11-16
+
+ADMIN KEYS (5):
+  A04E-02C0-AD82-43C0
+  AAF1-40CA-22EE-4FA8
+  AC9F-8A19-2348-5824
+  A644-3AC3-9B3C-19D6
+  A8D8-1662-5F2A-9B6C
+
+TECHNICIAN KEYS (5):
+  TD5A-BB21-A638-C43A
+  T320-5A0A-6EEE-A8C3
+  TEE8-B2A9-3EFE-9E56
+  T7BC-2B17-947D-982B
+  T569-65FE-B065-10C5
+
+USAGE:
+- These keys are for testing purposes only
+- Admin keys start with 'A', Technician keys start with 'T'
+- Copy any key and paste into the ActivationWindow
+- The paste functionality will auto-split the key into segments
+
+NOTES:
+- Keys are validated using HMAC-SHA256
+- Each key is tied to a specific role (ADMIN or TECHNICIAN)
+- To generate more keys, run: dotnet run --project KeyGenerator/KeyGenerator.csproj

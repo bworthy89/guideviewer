@@ -1,0 +1,95 @@
+<Page
+    x:Class="GuideViewer.Views.Pages.ProgressPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,24">
+            <TextBlock
+                Text="Progress Dashboard"
+                Style="{StaticResource TitleLargeTextBlockStyle}"/>
+            <TextBlock
+                Text="Track your installation progress across all guides"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        </StackPanel>
+
+        <!-- Content Area -->
+        <ScrollViewer Grid.Row="1">
+            <StackPanel Spacing="24">
+                <!-- Summary Cards -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Placeholder Cards -->
+                    <Border Grid.Column="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="0" Style="{StaticResource TitleTextBlockStyle}" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Total Guides" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="8" Padding="16" Margin="4,0,4,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="0" Style="{StaticResource TitleTextBlockStyle}" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                            <TextBlock Text="Completed" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                            CornerRadius="8" Padding="16" Margin="8,0,0,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="0%" Style="{StaticResource TitleTextBlockStyle}" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock Text="Overall Progress" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- Recent Activity -->
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Recent Activity" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <InfoBar
+                        Title="No Activity Yet"
+                        Message="Your progress will be tracked automatically as you work through guides."
+                        Severity="Informational"
+                        IsOpen="True"
+                        IsClosable="False"/>
+                </StackPanel>
+
+                <!-- Future Features -->
+                <StackPanel Spacing="8" Margin="0,24,0,0">
+                    <TextBlock
+                        Text="Coming in Milestone 2:"
+                        Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="• Real-time progress tracking" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <TextBlock Text="• Completion statistics and charts" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <TextBlock Text="• Time estimates for remaining guides" Style="{StaticResource BodyTextBlockStyle}"/>
+                        <TextBlock Text="• Export progress reports" Style="{StaticResource BodyTextBlockStyle}"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

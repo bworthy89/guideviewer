@@ -1,0 +1,150 @@
+<Window
+    x:Class="GuideViewer.Views.ActivationWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:GuideViewer.ViewModels"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance Type=viewmodels:ActivationViewModel}">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <!-- Main content -->
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Spacing="24"
+            MaxWidth="500">
+
+            <!-- App Logo/Icon -->
+            <Viewbox Width="80" Height="80" HorizontalAlignment="Center">
+                <FontIcon Glyph="&#xE8F1;" FontSize="80" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+            </Viewbox>
+
+            <!-- Title -->
+            <TextBlock
+                Text="Activate GuideViewer"
+                Style="{StaticResource TitleTextBlockStyle}"
+                HorizontalAlignment="Center"/>
+
+            <!-- Subtitle -->
+            <TextBlock
+                Text="Enter your product key to get started"
+                Style="{StaticResource BodyTextBlockStyle}"
+                HorizontalAlignment="Center"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+            <!-- Error InfoBar -->
+            <InfoBar
+                x:Name="ErrorInfoBar"
+                Severity="Error"
+                IsOpen="{Binding HasError, Mode=OneWay}"
+                Message="{Binding ErrorMessage, Mode=OneWay}"
+                IsClosable="True"
+                Closed="ErrorInfoBar_Closed"/>
+
+            <!-- Product Key Input -->
+            <StackPanel Spacing="16">
+                <TextBlock
+                    Text="Product Key"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"/>
+
+                <!-- Four segment input with hyphens -->
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                    <TextBox
+                        x:Name="Segment1TextBox"
+                        Text="{Binding Segment1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Width="100"
+                        MaxLength="4"
+                        PlaceholderText="XXXX"
+                        CharacterCasing="Upper"
+                        TextAlignment="Center"
+                        FontSize="18"
+                        FontFamily="Consolas"
+                        IsEnabled="{Binding IsLoading, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}"
+                        TextChanged="SegmentTextBox_TextChanged"
+                        PreviewKeyDown="SegmentTextBox_PreviewKeyDown"
+                        Paste="SegmentTextBox_Paste"/>
+
+                    <TextBlock Text="-" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+
+                    <TextBox
+                        x:Name="Segment2TextBox"
+                        Text="{Binding Segment2, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Width="100"
+                        MaxLength="4"
+                        PlaceholderText="XXXX"
+                        CharacterCasing="Upper"
+                        TextAlignment="Center"
+                        FontSize="18"
+                        FontFamily="Consolas"
+                        IsEnabled="{Binding IsLoading, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}"
+                        TextChanged="SegmentTextBox_TextChanged"
+                        PreviewKeyDown="SegmentTextBox_PreviewKeyDown"/>
+
+                    <TextBlock Text="-" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+
+                    <TextBox
+                        x:Name="Segment3TextBox"
+                        Text="{Binding Segment3, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Width="100"
+                        MaxLength="4"
+                        PlaceholderText="XXXX"
+                        CharacterCasing="Upper"
+                        TextAlignment="Center"
+                        FontSize="18"
+                        FontFamily="Consolas"
+                        IsEnabled="{Binding IsLoading, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}"
+                        TextChanged="SegmentTextBox_TextChanged"
+                        PreviewKeyDown="SegmentTextBox_PreviewKeyDown"/>
+
+                    <TextBlock Text="-" VerticalAlignment="Center" FontSize="18" FontWeight="Bold"/>
+
+                    <TextBox
+                        x:Name="Segment4TextBox"
+                        Text="{Binding Segment4, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Width="100"
+                        MaxLength="4"
+                        PlaceholderText="XXXX"
+                        CharacterCasing="Upper"
+                        TextAlignment="Center"
+                        FontSize="18"
+                        FontFamily="Consolas"
+                        IsEnabled="{Binding IsLoading, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}"
+                        TextChanged="SegmentTextBox_TextChanged"
+                        PreviewKeyDown="SegmentTextBox_PreviewKeyDown"/>
+                </StackPanel>
+
+                <!-- Helper text -->
+                <TextBlock
+                    Text="Example: A1B2-C3D4-E5F6-G7H8"
+                    HorizontalAlignment="Center"
+                    FontSize="12"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            </StackPanel>
+
+            <!-- Activate Button with Loading State -->
+            <StackPanel Spacing="12">
+                <Button
+                    x:Name="ActivateButton"
+                    Content="Activate"
+                    Command="{Binding ActivateCommand}"
+                    HorizontalAlignment="Stretch"
+                    Style="{StaticResource AccentButtonStyle}"
+                    Height="40"
+                    IsEnabled="{Binding IsLoading, Mode=OneWay, Converter={StaticResource InverseBooleanConverter}}"/>
+
+                <!-- Loading indicator -->
+                <StackPanel
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="8"
+                    Visibility="{Binding IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <ProgressRing IsActive="{Binding IsLoading, Mode=OneWay}" Width="20" Height="20"/>
+                    <TextBlock Text="Activating..." VerticalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</Window>
