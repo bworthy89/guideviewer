@@ -22,7 +22,8 @@ public sealed partial class GuidesPage : Page
             App.GetService<Data.Repositories.GuideRepository>(),
             App.GetService<Data.Repositories.CategoryRepository>(),
             App.GetService<Services.NavigationService>(),
-            App.GetService<Data.Repositories.UserRepository>());
+            App.GetService<Data.Repositories.UserRepository>(),
+            this.DispatcherQueue);
 
         // Set DataContext
         this.DataContext = ViewModel;

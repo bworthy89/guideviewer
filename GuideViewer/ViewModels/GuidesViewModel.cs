@@ -4,6 +4,7 @@ using GuideViewer.Data.Entities;
 using GuideViewer.Data.Repositories;
 using GuideViewer.Services;
 using LiteDB;
+using Microsoft.UI.Dispatching;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ public partial class GuidesViewModel : ObservableObject
     private readonly CategoryRepository _categoryRepository;
     private readonly NavigationService _navigationService;
     private readonly UserRepository _userRepository;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     [ObservableProperty]
     private ObservableCollection<Guide> guides = new();
@@ -48,12 +50,14 @@ public partial class GuidesViewModel : ObservableObject
         GuideRepository guideRepository,
         CategoryRepository categoryRepository,
         NavigationService navigationService,
-        UserRepository userRepository)
+        UserRepository userRepository,
+        DispatcherQueue dispatcherQueue)
     {
         _guideRepository = guideRepository ?? throw new ArgumentNullException(nameof(guideRepository));
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
         _navigationService = navigationService ?? throw new ArgumentNullException(nameof(navigationService));
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _dispatcherQueue = dispatcherQueue ?? throw new ArgumentNullException(nameof(dispatcherQueue));
 
         // Check if current user is admin
         LoadUserRole();
@@ -98,7 +102,7 @@ public partial class GuidesViewModel : ObservableObject
                 var guidesList = _guideRepository.GetAll().ToList();
 
                 // Update UI on main thread
-                App.Current.DispatcherQueue.TryEnqueue(() =>
+                _dispatcherQueue.TryEnqueue(() =>
                 {
                     Categories.Clear();
                     Categories.Add(new Category { Name = "All Categories", Id = ObjectId.Empty });
@@ -165,7 +169,7 @@ public partial class GuidesViewModel : ObservableObject
 
                 var resultsList = results.ToList();
 
-                App.Current.DispatcherQueue.TryEnqueue(() =>
+                _dispatcherQueue.TryEnqueue(() =>
                 {
                     Guides.Clear();
                     foreach (var guide in resultsList)
@@ -232,7 +236,7 @@ public partial class GuidesViewModel : ObservableObject
 
                 var resultsList = results.ToList();
 
-                App.Current.DispatcherQueue.TryEnqueue(() =>
+                _dispatcherQueue.TryEnqueue(() =>
                 {
                     Guides.Clear();
                     foreach (var guide in resultsList)
