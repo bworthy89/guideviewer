@@ -48,7 +48,7 @@
                 Grid.Column="1"
                 Content="Clear"
                 Command="{Binding ClearSearchCommand}"
-                Visibility="{Binding SearchQuery, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                Visibility="{Binding HasSearchQuery, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <!-- Category Filter -->
             <ComboBox
@@ -87,7 +87,7 @@
                 VerticalAlignment="Center"
                 Spacing="16"
                 MaxWidth="400"
-                Visibility="{Binding HasGuides, Converter={StaticResource InverseBooleanConverter}, ConverterParameter=Visibility}">
+                Visibility="{Binding HasGuides, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                 <FontIcon
                     Glyph="&#xE8F1;"
                     FontSize="64"
@@ -218,8 +218,8 @@
                                             Visibility="{Binding DataContext.IsAdmin, ElementName=PageRoot, Converter={StaticResource BooleanToVisibilityConverter}}"
                                             MinWidth="60">
                                             <Button.Flyout>
-                                                <Flyout>
-                                                    <StackPanel Spacing="12" MinWidth="250">
+                                                <Flyout x:Name="DeleteFlyout">
+                                                    <StackPanel Spacing="12" MinWidth="300">
                                                         <TextBlock
                                                             Text="Delete this guide?"
                                                             Style="{StaticResource SubtitleTextBlockStyle}"/>
@@ -228,7 +228,9 @@
                                                             Style="{StaticResource BodyTextBlockStyle}"
                                                             TextWrapping="Wrap"/>
                                                         <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                                                            <Button Content="Cancel"/>
+                                                            <Button
+                                                                Content="Cancel"
+                                                                Click="DeleteCancel_Click"/>
                                                             <Button
                                                                 Content="Delete"
                                                                 Style="{StaticResource AccentButtonStyle}"

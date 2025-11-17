@@ -37,6 +37,11 @@ public partial class GuidesViewModel : ObservableObject
     [ObservableProperty]
     private Category? selectedCategory;
 
+    /// <summary>
+    /// Gets whether a search query is active.
+    /// </summary>
+    public bool HasSearchQuery => !string.IsNullOrWhiteSpace(SearchQuery);
+
     [ObservableProperty]
     private bool isLoading = false;
 
@@ -364,6 +369,14 @@ public partial class GuidesViewModel : ObservableObject
     {
         SearchQuery = string.Empty;
         await SearchAsync();
+    }
+
+    /// <summary>
+    /// Called when SearchQuery property changes to notify HasSearchQuery.
+    /// </summary>
+    partial void OnSearchQueryChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasSearchQuery));
     }
 
     /// <summary>

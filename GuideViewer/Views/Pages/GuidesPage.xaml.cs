@@ -46,6 +46,17 @@ public sealed partial class GuidesPage : Page
         }
     }
 
+    private void DeleteCancel_Click(object sender, RoutedEventArgs e)
+    {
+        // Close the flyout
+        if (sender is Button button &&
+            button.Parent is StackPanel panel &&
+            panel.Parent is Flyout flyout)
+        {
+            flyout.Hide();
+        }
+    }
+
     private void DeleteConfirm_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button button && button.Tag is Guide guide)
