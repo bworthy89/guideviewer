@@ -8,35 +8,35 @@
 ## Tasks Overview
 
 ### 🏗️ Project Setup
-- [ ] Create WinUI 3 project with Windows App SDK
-- [ ] Set up solution structure (Core, Data, UI projects)
-- [ ] Install NuGet packages (LiteDB, CommunityToolkit.Mvvm, etc.)
-- [ ] Configure project references between layers
-- [ ] Set up .gitignore for Visual Studio/C# projects
-- [ ] Initialize Git repository and make initial commit
+- [x] Create WinUI 3 project with Windows App SDK
+- [x] Set up solution structure (Core, Data, UI projects)
+- [x] Install NuGet packages (LiteDB, CommunityToolkit.Mvvm, etc.)
+- [x] Configure project references between layers
+- [x] Set up .gitignore for Visual Studio/C# projects
+- [x] Initialize Git repository and make initial commit
 
 ### 💾 Data Layer
-- [ ] Create GuideViewer.Data project (Class Library)
-- [ ] Add LiteDB NuGet package
-- [ ] Implement DatabaseService for LiteDB initialization
-- [ ] Create User entity model
-- [ ] Create Settings entity model
-- [ ] Implement repository pattern base class
-- [ ] Create UserRepository
-- [ ] Create SettingsRepository
-- [ ] Test database connection and CRUD operations
+- [x] Create GuideViewer.Data project (Class Library)
+- [x] Add LiteDB NuGet package
+- [x] Implement DatabaseService for LiteDB initialization
+- [x] Create User entity model
+- [x] Create Settings entity model (AppSetting)
+- [x] Implement repository pattern base class
+- [x] Create UserRepository
+- [x] Create SettingsRepository
+- [x] Test database connection and CRUD operations
 
 ### 🔐 Authentication & Licensing
-- [ ] Create GuideViewer.Core project (Class Library)
-- [ ] Implement LicenseValidator service
-  - [ ] Product key format validation (XXXX-XXXX-XXXX-XXXX)
-  - [ ] HMAC-SHA256 signature verification
-  - [ ] Role extraction (ADMIN vs TECHNICIAN)
-- [ ] Create ProductKeyGenerator utility (for testing)
+- [x] Create GuideViewer.Core project (Class Library)
+- [x] Implement LicenseValidator service
+  - [x] Product key format validation (XXXX-XXXX-XXXX-XXXX)
+  - [x] HMAC-SHA256 signature verification
+  - [x] Role extraction (ADMIN vs TECHNICIAN)
+- [x] Create ProductKeyGenerator utility (for testing)
 - [ ] Implement SecureStorage service using Windows Credential Manager
-- [ ] Create UserRole enum (Admin, Technician)
-- [ ] Create LicenseInfo model
-- [ ] Write unit tests for LicenseValidator
+- [x] Create UserRole enum (Admin, Technician)
+- [x] Create LicenseInfo model
+- [x] Write unit tests for LicenseValidator (11 tests, all passing)
 - [ ] Generate test product keys (5 admin, 5 tech)
 
 ### 🎨 UI - Activation Window
@@ -118,17 +118,17 @@
 - [ ] Document installation steps
 
 ### 🧪 Testing
-- [ ] Create GuideViewer.Tests project (xUnit)
-- [ ] Add testing NuGet packages (xUnit, FluentAssertions, Moq)
-- [ ] Write unit tests for LicenseValidator
-  - [ ] Test valid admin key
-  - [ ] Test valid technician key
-  - [ ] Test invalid format
-  - [ ] Test invalid checksum
+- [x] Create GuideViewer.Tests project (xUnit)
+- [x] Add testing NuGet packages (xUnit, FluentAssertions, Moq)
+- [x] Write unit tests for LicenseValidator
+  - [x] Test valid admin key
+  - [x] Test valid technician key
+  - [x] Test invalid format
+  - [x] Test invalid checksum
 - [ ] Write unit tests for SettingsService
 - [ ] Write integration tests for database operations
 - [ ] Achieve 80%+ code coverage for Core project
-- [ ] Run all tests and ensure they pass
+- [x] Run all tests and ensure they pass (11/11 passing)
 
 ### 📝 Documentation
 - [ ] Create README.md with setup instructions
@@ -213,12 +213,32 @@ msbuild /t:Publish /p:Configuration=Release
 
 **Started**: 2025-11-16
 **Target Completion**: Week 2
-**Current Status**: 🟡 In Progress
+**Current Status**: 🟢 ~50% Complete
+
+### Completed ✅
+- ✅ Project setup and solution structure
+- ✅ All NuGet dependencies installed
+- ✅ Git repository initialized with 3 commits
+- ✅ Complete data layer with LiteDB (DatabaseService, Repositories, Entities)
+- ✅ Product key validation with HMAC-SHA256
+- ✅ Unit tests for licensing (11/11 passing)
+
+### In Progress 🟡
+- Settings service implementation
+- Activation window UI
+- Main window with NavigationView
+- Dependency injection setup
+
+### Remaining 🔴
+- UI implementation (Activation + Main windows)
+- Settings persistence
+- MSIX packaging configuration
+- Documentation
 
 ### Week 1 Goals
-- Complete project setup
-- Implement authentication system
-- Create basic UI shell
+- ✅ Complete project setup
+- ✅ Implement authentication system
+- ⏳ Create basic UI shell (in progress)
 
 ### Week 2 Goals
 - Finish settings persistence
@@ -227,4 +247,4 @@ msbuild /t:Publish /p:Configuration=Release
 
 ---
 
-**Last Updated**: 2025-11-16
+**Last Updated**: 2025-11-16 (Evening)
