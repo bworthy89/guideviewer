@@ -1,4 +1,5 @@
 <Page
+    x:Name="Root"
     x:Class="GuideViewer.Views.Pages.ProgressPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -25,69 +26,296 @@
 
         <!-- Content Area -->
         <ScrollViewer Grid.Row="1">
-            <StackPanel Spacing="24">
-                <!-- Summary Cards -->
-                <Grid>
+            <StackPanel Spacing="32">
+                <!-- Loading Indicator -->
+                <ProgressRing
+                    IsActive="{Binding IsLoading}"
+                    Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    HorizontalAlignment="Center"
+                    Width="40" Height="40"/>
+
+                <!-- Statistics Cards -->
+                <Grid Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
 
-                    <!-- Placeholder Cards -->
-                    <Border Grid.Column="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                            CornerRadius="8" Padding="16" Margin="0,0,8,0">
+                    <!-- Total Started Card -->
+                    <Border Grid.Column="0"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="0,0,8,0">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="0" Style="{StaticResource TitleTextBlockStyle}" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                            <TextBlock Text="Total Guides" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock
+                                Text="{Binding TotalStarted}"
+                                Style="{StaticResource TitleTextBlockStyle}"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            <TextBlock
+                                Text="Started"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                            CornerRadius="8" Padding="16" Margin="4,0,4,0">
+                    <!-- In Progress Card -->
+                    <Border Grid.Column="1"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="4,0,4,0">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="0" Style="{StaticResource TitleTextBlockStyle}" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
-                            <TextBlock Text="Completed" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock
+                                Text="{Binding CurrentlyInProgress}"
+                                Style="{StaticResource TitleTextBlockStyle}"
+                                Foreground="{ThemeResource SystemFillColorCautionBrush}"/>
+                            <TextBlock
+                                Text="In Progress"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
                     </Border>
 
-                    <Border Grid.Column="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
-                            CornerRadius="8" Padding="16" Margin="8,0,0,0">
+                    <!-- Completed Card -->
+                    <Border Grid.Column="2"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="4,0,4,0">
                         <StackPanel Spacing="4">
-                            <TextBlock Text="0%" Style="{StaticResource TitleTextBlockStyle}" Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
-                            <TextBlock Text="Overall Progress" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock
+                                Text="{Binding TotalCompleted}"
+                                Style="{StaticResource TitleTextBlockStyle}"
+                                Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                            <TextBlock
+                                Text="Completed"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Completion Rate Card -->
+                    <Border Grid.Column="3"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="4,0,4,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock
+                                Style="{StaticResource TitleTextBlockStyle}"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}">
+                                <Run Text="{Binding CompletionRate}"/><Run Text="%"/>
+                            </TextBlock>
+                            <TextBlock
+                                Text="Completion Rate"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Average Time Card -->
+                    <Border Grid.Column="4"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="16"
+                            Margin="8,0,0,0">
+                        <StackPanel Spacing="4">
+                            <TextBlock
+                                Style="{StaticResource TitleTextBlockStyle}"
+                                Foreground="{ThemeResource AccentFillColorDefaultBrush}">
+                                <Run Text="{Binding AverageCompletionTimeHours}"/><Run Text="h"/>
+                            </TextBlock>
+                            <TextBlock
+                                Text="Avg. Time"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
                     </Border>
                 </Grid>
 
-                <!-- Recent Activity -->
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Recent Activity" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <!-- Active Guides Section -->
+                <StackPanel Spacing="16" Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <TextBlock
+                        Text="Active Guides"
+                        Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <!-- Active Guides List -->
+                    <ItemsRepeater
+                        ItemsSource="{Binding ActiveGuides}"
+                        Visibility="{Binding HasActiveGuides, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ItemsRepeater.Layout>
+                            <StackLayout Spacing="12"/>
+                        </ItemsRepeater.Layout>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="16">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Guide Info -->
+                                        <StackPanel Grid.Column="0" Spacing="8">
+                                            <TextBlock
+                                                Text="{Binding GuideTitle}"
+                                                Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                            <TextBlock
+                                                Text="{Binding GuideCategory}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                            <!-- Progress Bar -->
+                                            <ProgressBar
+                                                Value="{Binding ProgressPercentage}"
+                                                Maximum="100"
+                                                Height="4"
+                                                Margin="0,4,0,0"/>
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    Text="{Binding ProgressDisplayText}"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Text="{Binding TimeRemainingDisplayText}"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                            </Grid>
+
+                                            <TextBlock
+                                                Text="{Binding LastAccessedDisplayText}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                        </StackPanel>
+
+                                        <!-- Resume Button -->
+                                        <Button
+                                            Grid.Column="1"
+                                            Content="Resume"
+                                            Command="{Binding ElementName=Root, Path=DataContext.ResumeGuideCommand}"
+                                            CommandParameter="{Binding}"
+                                            Style="{StaticResource AccentButtonStyle}"
+                                            VerticalAlignment="Center"
+                                            Margin="16,0,0,0"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+
+                    <!-- Empty State -->
                     <InfoBar
-                        Title="No Activity Yet"
-                        Message="Your progress will be tracked automatically as you work through guides."
+                        Title="No Active Guides"
+                        Message="Start tracking your progress by opening a guide from the Guides page."
                         Severity="Informational"
                         IsOpen="True"
-                        IsClosable="False"/>
+                        IsClosable="False"
+                        Visibility="{Binding HasActiveGuides, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                 </StackPanel>
 
-                <!-- Future Features -->
-                <StackPanel Spacing="8" Margin="0,24,0,0">
+                <!-- Recently Completed Section -->
+                <StackPanel Spacing="16" Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                     <TextBlock
-                        Text="Coming in Milestone 2:"
+                        Text="Recently Completed"
                         Style="{StaticResource SubtitleTextBlockStyle}"/>
-                    <StackPanel Spacing="8">
-                        <TextBlock Text="• Real-time progress tracking" Style="{StaticResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="• Completion statistics and charts" Style="{StaticResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="• Time estimates for remaining guides" Style="{StaticResource BodyTextBlockStyle}"/>
-                        <TextBlock Text="• Export progress reports" Style="{StaticResource BodyTextBlockStyle}"/>
-                    </StackPanel>
+
+                    <!-- Completed Guides List -->
+                    <ItemsRepeater
+                        ItemsSource="{Binding CompletedGuides}"
+                        Visibility="{Binding HasCompletedGuides, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ItemsRepeater.Layout>
+                            <StackLayout Spacing="12"/>
+                        </ItemsRepeater.Layout>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="16">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Guide Info -->
+                                        <StackPanel Grid.Column="0" Spacing="8">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <FontIcon
+                                                    Glyph="&#xE73E;"
+                                                    FontSize="16"
+                                                    Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                                                <TextBlock
+                                                    Text="{Binding GuideTitle}"
+                                                    Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                            </StackPanel>
+                                            <TextBlock
+                                                Text="{Binding GuideCategory}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                            <TextBlock
+                                                Text="{Binding CompletedDisplayText}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                            <TextBlock
+                                                Text="{Binding TimeSpentDisplayText}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                        </StackPanel>
+
+                                        <!-- View Button -->
+                                        <Button
+                                            Grid.Column="1"
+                                            Content="View"
+                                            Command="{Binding ElementName=Root, Path=DataContext.ViewCompletedGuideCommand}"
+                                            CommandParameter="{Binding}"
+                                            VerticalAlignment="Center"
+                                            Margin="16,0,0,0"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+
+                    <!-- Empty State -->
+                    <InfoBar
+                        Title="No Completed Guides Yet"
+                        Message="Complete guides will appear here with completion statistics."
+                        Severity="Informational"
+                        IsOpen="True"
+                        IsClosable="False"
+                        Visibility="{Binding HasCompletedGuides, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

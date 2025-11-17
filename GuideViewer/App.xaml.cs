@@ -99,6 +99,7 @@ public partial class App : Application
         services.AddTransient<SettingsRepository>();
         services.AddTransient<GuideViewer.Data.Repositories.GuideRepository>();
         services.AddTransient<GuideViewer.Data.Repositories.CategoryRepository>();
+        services.AddTransient<GuideViewer.Data.Repositories.ProgressRepository>();
 
         // Core services - Singleton for application lifetime
         services.AddSingleton<LicenseValidator>();
@@ -108,8 +109,15 @@ public partial class App : Application
         // UI services - Singleton for application lifetime
         services.AddSingleton<GuideViewer.Services.NavigationService>();
 
+        // ViewModels - Singleton for application lifetime
+        services.AddSingleton<GuideViewer.ViewModels.MainViewModel>();
+
         // Editor services - Transient (one per editor instance)
         services.AddTransient<GuideViewer.Core.Services.IAutoSaveService, GuideViewer.Core.Services.AutoSaveService>();
+
+        // Progress tracking services - Transient (one per usage)
+        services.AddTransient<GuideViewer.Core.Services.ITimerService, GuideViewer.Core.Services.TimerService>();
+        services.AddTransient<GuideViewer.Core.Services.IProgressTrackingService, GuideViewer.Core.Services.ProgressTrackingService>();
 
         // Logging
         services.AddSingleton(Log.Logger);

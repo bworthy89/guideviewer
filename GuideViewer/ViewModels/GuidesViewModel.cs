@@ -322,6 +322,24 @@ public partial class GuidesViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Starts or resumes progress tracking for a guide.
+    /// </summary>
+    [RelayCommand]
+    private void StartGuide(Guide guide)
+    {
+        if (guide == null)
+        {
+            return;
+        }
+
+        Log.Information("Starting guide: {GuideId} - {GuideTitle}", guide.Id, guide.Title);
+
+        // Navigate to active guide progress page
+        // Pass guideId and null progressId (page will check for existing progress)
+        _navigationService.NavigateTo(PageKeys.ActiveGuide, (guide.Id, (ObjectId?)null));
+    }
+
+    /// <summary>
     /// Deletes a guide after confirmation.
     /// </summary>
     [RelayCommand]

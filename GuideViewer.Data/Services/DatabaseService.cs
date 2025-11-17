@@ -75,6 +75,7 @@ public class DatabaseService : IDisposable
         db.Mapper.Entity<Guide>();
         db.Mapper.Entity<Category>();
         db.Mapper.Entity<Step>();
+        db.Mapper.Entity<Progress>();
 
         // Users collection
         var users = db.GetCollection<User>("users");
@@ -93,6 +94,16 @@ public class DatabaseService : IDisposable
         // Categories collection - index on Name for fast lookup
         var categories = db.GetCollection<Category>("categories");
         categories.EnsureIndex(x => x.Name, unique: true);
+
+        // Progress collection - indexes for user lookup and filtering
+        var progress = db.GetCollection<Progress>("progress");
+        // Composite index for primary lookup (ensures one progress per user+guide)
+        progress.EnsureIndex(x => new { x.UserId, x.GuideId }, unique: true);
+        // Individual indexes for filtering and sorting
+        progress.EnsureIndex(x => x.UserId);
+        progress.EnsureIndex(x => x.GuideId);
+        progress.EnsureIndex(x => x.CompletedAt);
+        progress.EnsureIndex(x => x.LastAccessedAt);
     }
 
     /// <summary>

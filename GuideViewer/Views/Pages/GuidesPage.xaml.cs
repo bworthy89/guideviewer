@@ -28,9 +28,6 @@ public sealed partial class GuidesPage : Page
 
         // Set DataContext
         this.DataContext = ViewModel;
-
-        // Set name for ElementName bindings
-        this.Name = "PageRoot";
     }
 
     protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -80,6 +77,30 @@ public sealed partial class GuidesPage : Page
             {
                 flyout.Hide();
             }
+        }
+    }
+
+    private void StartButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is Guide guide)
+        {
+            ViewModel.StartGuideCommand.Execute(guide);
+        }
+    }
+
+    private void ViewButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is Guide guide)
+        {
+            ViewModel.ViewGuideCommand.Execute(guide);
+        }
+    }
+
+    private void EditButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is Guide guide)
+        {
+            ViewModel.EditGuideCommand.Execute(guide);
         }
     }
 }

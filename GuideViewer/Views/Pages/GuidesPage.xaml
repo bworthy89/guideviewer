@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:GuideViewer.ViewModels"
     xmlns:entities="using:GuideViewer.Data.Entities"
+    x:Name="PageRoot"
     mc:Ignorable="d"
     d:DataContext="{d:DesignInstance Type=viewmodels:GuidesViewModel}">
 
@@ -107,138 +108,145 @@
 
             <!-- Guides Grid -->
             <ScrollViewer>
-                <ItemsRepeater
-                    ItemsSource="{Binding Guides}"
-                    Margin="0,0,0,24">
-                    <ItemsRepeater.Layout>
-                        <UniformGridLayout
-                            MinItemWidth="320"
-                            MinItemHeight="240"
-                            ItemsStretch="Fill"
-                            MinRowSpacing="16"
-                            MinColumnSpacing="16"/>
-                    </ItemsRepeater.Layout>
+                <Grid>
+                    <ItemsRepeater
+                        ItemsSource="{Binding Guides}"
+                        Margin="0,0,0,24">
+                        <ItemsRepeater.Layout>
+                            <UniformGridLayout
+                                MinItemWidth="320"
+                                MinItemHeight="240"
+                                ItemsStretch="Fill"
+                                MinRowSpacing="16"
+                                MinColumnSpacing="16"/>
+                        </ItemsRepeater.Layout>
 
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="entities:Guide">
-                            <Border
-                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                Padding="16">
-                                <Grid RowSpacing="12">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="entities:Guide">
+                                <Border
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="16">
+                                    <Grid RowSpacing="12">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
 
-                                    <!-- Title and Category -->
-                                    <StackPanel Grid.Row="0" Spacing="8">
+                                        <!-- Title and Category -->
+                                        <StackPanel Grid.Row="0" Spacing="8">
+                                            <TextBlock
+                                                Text="{Binding Title}"
+                                                Style="{StaticResource SubtitleTextBlockStyle}"
+                                                FontWeight="SemiBold"
+                                                TextTrimming="CharacterEllipsis"
+                                                MaxLines="2"/>
+                                            <Border
+                                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                                CornerRadius="4"
+                                                Padding="8,4"
+                                                HorizontalAlignment="Left">
+                                                <TextBlock
+                                                    Text="{Binding Category}"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                                    FontWeight="SemiBold"/>
+                                            </Border>
+                                        </StackPanel>
+
+                                        <!-- Description -->
                                         <TextBlock
-                                            Text="{Binding Title}"
-                                            Style="{StaticResource SubtitleTextBlockStyle}"
-                                            FontWeight="SemiBold"
+                                            Grid.Row="1"
+                                            Text="{Binding Description}"
+                                            Style="{StaticResource BodyTextBlockStyle}"
+                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                             TextTrimming="CharacterEllipsis"
-                                            MaxLines="2"/>
-                                        <Border
-                                            Background="{ThemeResource AccentFillColorDefaultBrush}"
-                                            CornerRadius="4"
-                                            Padding="8,4"
-                                            HorizontalAlignment="Left">
-                                            <TextBlock
-                                                Text="{Binding Category}"
-                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
-                                                FontWeight="SemiBold"/>
-                                        </Border>
-                                    </StackPanel>
+                                            MaxLines="3"
+                                            TextWrapping="Wrap"/>
 
-                                    <!-- Description -->
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Text="{Binding Description}"
-                                        Style="{StaticResource BodyTextBlockStyle}"
-                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                        TextTrimming="CharacterEllipsis"
-                                        MaxLines="3"
-                                        TextWrapping="Wrap"/>
+                                        <!-- Metadata -->
+                                        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="16">
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <FontIcon
+                                                    Glyph="&#xE8FD;"
+                                                    FontSize="14"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                                <TextBlock
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                    <Run Text="{Binding StepCount}"/>
+                                                    <Run Text="steps"/>
+                                                </TextBlock>
+                                            </StackPanel>
 
-                                    <!-- Metadata -->
-                                    <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="16">
-                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                            <FontIcon
-                                                Glyph="&#xE8FD;"
-                                                FontSize="14"
-                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                            <TextBlock
-                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}">
-                                                <Run Text="{Binding StepCount}"/>
-                                                <Run Text="steps"/>
-                                            </TextBlock>
+                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                <FontIcon
+                                                    Glyph="&#xE916;"
+                                                    FontSize="14"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                                <TextBlock
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                    <Run Text="~"/>
+                                                    <Run Text="{Binding EstimatedMinutes}"/>
+                                                    <Run Text="min"/>
+                                                </TextBlock>
+                                            </StackPanel>
                                         </StackPanel>
 
-                                        <StackPanel Orientation="Horizontal" Spacing="4">
-                                            <FontIcon
-                                                Glyph="&#xE916;"
-                                                FontSize="14"
-                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                            <TextBlock
-                                                Style="{StaticResource CaptionTextBlockStyle}"
-                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}">
-                                                <Run Text="~"/>
-                                                <Run Text="{Binding EstimatedMinutes}"/>
-                                                <Run Text="min"/>
-                                            </TextBlock>
-                                        </StackPanel>
-                                    </StackPanel>
-
-                                    <!-- Action Buttons -->
-                                    <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8">
-                                        <Button
-                                            Content="View"
-                                            Style="{StaticResource AccentButtonStyle}"
-                                            Command="{Binding DataContext.ViewGuideCommand, ElementName=PageRoot}"
-                                            CommandParameter="{Binding}"
-                                            HorizontalAlignment="Stretch"
-                                            MinWidth="80"/>
-                                        <Button
-                                            Content="Edit"
-                                            Command="{Binding DataContext.EditGuideCommand, ElementName=PageRoot}"
-                                            CommandParameter="{Binding}"
-                                            Visibility="{Binding DataContext.IsAdmin, ElementName=PageRoot, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                            MinWidth="60"/>
-                                        <Button
-                                            Content="Delete"
-                                            Command="{Binding DataContext.DeleteGuideCommand, ElementName=PageRoot}"
-                                            CommandParameter="{Binding}"
-                                            Visibility="{Binding DataContext.IsAdmin, ElementName=PageRoot, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                            MinWidth="60">
-                                            <Button.Flyout>
-                                                <Flyout x:Name="DeleteFlyout">
-                                                    <StackPanel Spacing="12" MinWidth="300">
-                                                        <TextBlock
-                                                            Text="Delete this guide?"
-                                                            Style="{StaticResource SubtitleTextBlockStyle}"/>
-                                                        <TextBlock
-                                                            Text="This action cannot be undone. All steps and images will be permanently deleted."
-                                                            Style="{StaticResource BodyTextBlockStyle}"
-                                                            TextWrapping="Wrap"/>
-                                                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                                                            <Button
-                                                                Content="Cancel"
-                                                                Click="DeleteCancel_Click"/>
-                                                            <Button
-                                                                Content="Delete"
-                                                                Style="{StaticResource AccentButtonStyle}"
-                                                                Click="DeleteConfirm_Click"
-                                                                Tag="{Binding}"/>
+                                        <!-- Action Buttons -->
+                                        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8">
+                                            <Button
+                                                Content="Start"
+                                                Style="{StaticResource AccentButtonStyle}"
+                                                Click="StartButton_Click"
+                                                Tag="{Binding}"
+                                                HorizontalAlignment="Stretch"
+                                                MinWidth="80"/>
+                                            <Button
+                                                Content="View"
+                                                Click="ViewButton_Click"
+                                                Tag="{Binding}"
+                                                HorizontalAlignment="Stretch"
+                                                MinWidth="60"/>
+                                            <Button
+                                                Content="Edit"
+                                                Click="EditButton_Click"
+                                                Tag="{Binding}"
+                                                Visibility="{Binding DataContext.IsAdmin, ElementName=PageRoot, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                MinWidth="60"/>
+                                            <Button
+                                                Content="Delete"
+                                                Command="{Binding DataContext.DeleteGuideCommand, ElementName=PageRoot}"
+                                                CommandParameter="{Binding}"
+                                                Visibility="{Binding DataContext.IsAdmin, ElementName=PageRoot, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                MinWidth="60">
+                                                <Button.Flyout>
+                                                    <Flyout x:Name="DeleteFlyout">
+                                                        <StackPanel Spacing="12" MinWidth="300">
+                                                            <TextBlock
+                                                                Text="Delete this guide?"
+                                                                Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                                            <TextBlock
+                                                                Text="This action cannot be undone. All steps and images will be permanently deleted."
+                                                                Style="{StaticResource BodyTextBlockStyle}"
+                                                                TextWrapping="Wrap"/>
+                                                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                                                                <Button
+                                                                    Content="Cancel"
+                                                                    Click="DeleteCancel_Click"/>
+                                                                <Button
+                                                                    Content="Delete"
+                                                                    Style="{StaticResource AccentButtonStyle}"
+                                                                    Click="DeleteConfirm_Click"
+                                                                    Tag="{Binding}"/>
+                                                            </StackPanel>
                                                         </StackPanel>
-                                                    </StackPanel>
-                                                </Flyout>
+                                                    </Flyout>
                                             </Button.Flyout>
                                         </Button>
                                     </StackPanel>
@@ -247,6 +255,7 @@
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
                 </ItemsRepeater>
+                </Grid>
             </ScrollViewer>
         </Grid>
     </Grid>

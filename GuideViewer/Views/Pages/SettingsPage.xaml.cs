@@ -17,6 +17,7 @@ namespace GuideViewer.Views.Pages;
 public sealed partial class SettingsPage : Page
 {
     public CategoryManagementViewModel ViewModel { get; }
+    public ProgressReportViewModel ProgressReportViewModel { get; }
 
     public SettingsPage()
     {
@@ -28,8 +29,17 @@ public sealed partial class SettingsPage : Page
             App.GetService<Data.Repositories.GuideRepository>(),
             this.DispatcherQueue);
 
+        ProgressReportViewModel = new ProgressReportViewModel(
+            App.GetService<Data.Repositories.ProgressRepository>(),
+            App.GetService<Data.Repositories.UserRepository>(),
+            App.GetService<Data.Repositories.GuideRepository>(),
+            this.DispatcherQueue);
+
         // Bind categories to ItemsRepeater
         CategoriesRepeater.ItemsSource = ViewModel.Categories;
+
+        // Bind progress reports to the section's DataContext
+        ProgressReportsSection.DataContext = ProgressReportViewModel;
     }
 
     protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -38,6 +48,13 @@ public sealed partial class SettingsPage : Page
 
         // Reload categories when navigating to this page
         await ViewModel.LoadCategoriesCommand.ExecuteAsync(null);
+
+        // Load progress reports if user is admin
+        var mainViewModel = App.GetService<MainViewModel>();
+        if (mainViewModel?.IsAdmin == true)
+        {
+            await ProgressReportViewModel.InitializeAsync();
+        }
     }
 
     private async void AddCategory_Click(object sender, RoutedEventArgs e)
@@ -150,5 +167,13 @@ public sealed partial class SettingsPage : Page
             Convert.ToByte(hex.Substring(2, 2), 16),
             Convert.ToByte(hex.Substring(4, 2), 16)
         );
+    }
+
+    private void ProgressSearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+        {
+            ProgressReportViewModel.SearchQuery = sender.Text;
+        }
     }
 }

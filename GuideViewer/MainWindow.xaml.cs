@@ -24,7 +24,7 @@ public sealed partial class MainWindow : Window
 
         // Get services from DI
         _navigationService = App.GetService<NavigationService>();
-        ViewModel = new MainViewModel(_navigationService, App.GetService<Data.Repositories.UserRepository>());
+        ViewModel = App.GetService<MainViewModel>();
 
         // Set DataContext for bindings
         if (this.Content is FrameworkElement rootElement)
@@ -63,6 +63,7 @@ public sealed partial class MainWindow : Window
         _navigationService.RegisterPage<GuideEditorPage>(PageKeys.GuideEditor);
         _navigationService.RegisterPage<GuideDetailPage>(PageKeys.GuideDetail);
         _navigationService.RegisterPage<ProgressPage>(PageKeys.Progress);
+        _navigationService.RegisterPage<ActiveGuideProgressPage>(PageKeys.ActiveGuide);
         _navigationService.RegisterPage<SettingsPage>(PageKeys.Settings);
     }
 

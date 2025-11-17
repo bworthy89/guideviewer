@@ -190,6 +190,182 @@
                     </StackPanel>
                 </StackPanel>
 
+                <!-- Progress Reports Section (Admin Only) -->
+                <StackPanel
+                    x:Name="ProgressReportsSection"
+                    Spacing="12"
+                    Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Text="Progress Reports" Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <TextBlock
+                        Text="View all users' progress across guides"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                    <!-- Filters -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Search Box -->
+                        <AutoSuggestBox
+                            Grid.Column="0"
+                            x:Name="ProgressSearchBox"
+                            PlaceholderText="Search by user or guide..."
+                            QueryIcon="Find"
+                            Margin="0,0,8,0"
+                            TextChanged="ProgressSearchBox_TextChanged"/>
+
+                        <!-- User Filter -->
+                        <ComboBox
+                            Grid.Column="1"
+                            x:Name="UserFilterComboBox"
+                            PlaceholderText="Filter by user"
+                            Width="250"
+                            Margin="4,0,4,0"
+                            HorizontalAlignment="Stretch"
+                            ItemsSource="{Binding AvailableUsers}"
+                            SelectedItem="{Binding SelectedUserFilter, Mode=TwoWay}"/>
+
+                        <!-- Guide Filter -->
+                        <ComboBox
+                            Grid.Column="2"
+                            x:Name="GuideFilterComboBox"
+                            PlaceholderText="Filter by guide"
+                            Width="250"
+                            Margin="8,0,0,0"
+                            HorizontalAlignment="Stretch"
+                            ItemsSource="{Binding AvailableGuides}"
+                            SelectedItem="{Binding SelectedGuideFilter, Mode=TwoWay}"/>
+                    </Grid>
+
+                    <!-- Loading Indicator -->
+                    <ProgressRing
+                        IsActive="{Binding IsLoading}"
+                        Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        HorizontalAlignment="Center"
+                        Margin="0,24,0,24"
+                        Width="40" Height="40"/>
+
+                    <!-- Progress Reports List -->
+                    <ItemsRepeater
+                        ItemsSource="{Binding FilteredProgress}"
+                        Visibility="{Binding IsLoading, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                        <ItemsRepeater.Layout>
+                            <StackLayout Spacing="12"/>
+                        </ItemsRepeater.Layout>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="16">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Row 1: User and Guide -->
+                                        <StackPanel Grid.Row="0" Grid.Column="0" Spacing="4">
+                                            <TextBlock
+                                                Text="{Binding UserName}"
+                                                Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                            <TextBlock
+                                                Text="{Binding GuideTitle}"
+                                                Style="{StaticResource BodyTextBlockStyle}"
+                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+
+                                        <!-- Row 1: Status Badge -->
+                                        <Border
+                                            Grid.Row="0" Grid.Column="1"
+                                            Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                            CornerRadius="4"
+                                            Padding="8,4"
+                                            VerticalAlignment="Center">
+                                            <TextBlock
+                                                Text="{Binding Status}"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
+                                                Foreground="White"/>
+                                        </Border>
+
+                                        <!-- Row 2: Progress Bar -->
+                                        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="4" Margin="0,12,0,0">
+                                            <ProgressBar
+                                                Value="{Binding CompletionPercentage}"
+                                                Maximum="100"
+                                                Height="4"/>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    Text="{Binding ProgressDisplayText}"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                    <Run Text="{Binding CompletionPercentage}"/><Run Text="%"/>
+                                                </TextBlock>
+                                            </Grid>
+                                        </StackPanel>
+
+                                        <!-- Row 3: Metadata -->
+                                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Spacing="4" Margin="0,8,0,0">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    Text="{Binding TimeSpentDisplayText}"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Text="{Binding LastAccessedDisplayText}"
+                                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+
+                    <!-- Empty State -->
+                    <InfoBar
+                        Title="No Progress Records"
+                        Message="No users have started any guides yet."
+                        Severity="Informational"
+                        IsOpen="True"
+                        IsClosable="False"
+                        Visibility="{Binding HasProgress, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                </StackPanel>
+
                 <!-- Coming Soon -->
                 <StackPanel Spacing="8" Margin="0,24,0,0">
                     <TextBlock
