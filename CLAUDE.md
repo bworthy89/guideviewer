@@ -104,8 +104,8 @@ GuideViewer.sln
 - Resources: `Animations.xaml`, `Styles.xaml` (5 animations, 9 enhanced styles)
 
 **GuideViewer.Core (Business Logic)**
-- Services: `LicenseValidator`, `ISettingsService`, `IImageStorageService`, `IAutoSaveService`, `IProgressTrackingService`, `ITimerService`, `IGuideExportService`, `IGuideImportService`, `IDatabaseBackupService`, `IErrorHandlingService`, `IPerformanceMonitoringService`
-- Models: `UserRole`, `LicenseInfo`, `AppSettings`, `ImageValidationResult`, `ImageMetadata`, `ProgressStatistics`, `ProgressReportItem`, `GuideExport`, `ImportResult`, `BackupInfo`, `ErrorInfo`, `ErrorCategory`, `PerformanceMetric`
+- Services: `LicenseValidator`, `ISettingsService`, `IImageStorageService`, `IAutoSaveService`, `IProgressTrackingService`, `ITimerService`, `IGuideExportService`, `IGuideImportService`, `IDatabaseBackupService`, `IErrorHandlingService`, `IPerformanceMonitoringService`, `IOneDriveGuideService`
+- Models: `UserRole`, `LicenseInfo`, `AppSettings`, `ImageValidationResult`, `ImageMetadata`, `ProgressStatistics`, `ProgressReportItem`, `GuideExport`, `ImportResult`, `BackupInfo`, `ErrorInfo`, `ErrorCategory`, `PerformanceMetric`, `OneDriveGuideInfo`, `GuideUpdateInfo`, `GuideUpdateType`
 - Utilities: `ProductKeyGenerator`, `SampleDataSeeder`
 - **No dependencies on Data or UI layers**
 
@@ -164,6 +164,105 @@ var adminKey = validator.GenerateProductKey(UserRole.Admin);
 ```
 
 See `TEST_PRODUCT_KEYS.txt` for pre-generated test keys.
+
+---
+
+## Guide Distribution System
+
+### OneDrive-Based Guide Updates
+
+**Problem**: SharePoint REST API access is blocked by IT restrictions.
+
+**Solution**: OneDrive sync folder monitoring with local file system access (no API required).
+
+### How It Works
+
+```
+IT Admin uploads guides to SharePoint
+        ↓ (OneDrive syncs automatically)
+Local: C:\Users\[User]\OneDrive - Glory Global\GuideViewer_Guides\
+        ↓ (GuideViewer monitors folder)
+Detects new/updated guides → Imports into database
+```
+
+### Key Components
+
+**OneDriveGuideService** (`GuideViewer.Core/Services/`)
+- Detects OneDrive sync folder location (registry/environment variables)
+- Scans for guide ZIP packages
+- Compares with local database to identify new/updated guides
+- Imports guides via `IGuideImportService`
+- Optional: FileSystemWatcher for real-time monitoring
+
+**Settings Page UI**
+- "Check for Guide Updates" button
+- OneDrive connection status display
+- `GuideUpdatesDialog` for selecting which guides to import
+
+### User Workflow
+
+**For Technicians**:
+1. Open GuideViewer → Settings
+2. Click "Check for Guide Updates"
+3. Dialog shows available guides (all pre-selected)
+4. Click "Import Selected"
+5. New guides appear in Guides list
+
+**For IT Admins**:
+1. Upload guide ZIPs to SharePoint: `GuideViewer_Guides/Guides/`
+2. OneDrive syncs automatically to all field PCs
+3. Notify technicians to check for updates
+
+### Advantages
+
+✅ **No API Access Required** - Pure file system operations
+✅ **No Admin Rights Needed** - OneDrive syncs to user folder
+✅ **Automatic Sync** - OneDrive handles cloud synchronization
+✅ **Offline-First** - Files are local, works offline
+✅ **Simple Deployment** - Just sync a SharePoint folder
+
+See [ONEDRIVE_GUIDE_UPDATES.md](ONEDRIVE_GUIDE_UPDATES.md) for complete documentation, setup instructions, and troubleshooting.
+
+---
+
+## Application Updates (Planned)
+
+### Squirrel.Windows Auto-Update System
+
+**Status**: 🚧 Planned for implementation
+
+**Purpose**: Automatic application updates (not guide content - that uses OneDrive)
+
+**Why Separate Systems?**:
+- App updates: Infrequent (monthly), large packages, requires restart
+- Guide updates: Frequent (weekly), small packages, no restart
+
+**Architecture**:
+```
+IT Admin publishes app updates to SharePoint/file share
+        ↓
+Squirrel.Windows checks for updates
+        ↓
+Downloads delta packages (only changed files)
+        ↓
+Applies update on next app restart
+```
+
+**Features**:
+- Delta updates (only download changed files)
+- Automatic background checks
+- No admin rights required (%LocalAppData% install)
+- Rollback support
+- No AppLocker restrictions (confirmed)
+
+**Setup Required**:
+1. Install Squirrel tooling: `dotnet tool install --global Clowd.Squirrel`
+2. Add NuGet package: `Clowd.Squirrel` to GuideViewer.csproj
+3. Create `UpdateService.cs` implementation
+4. Add update UI to Settings page
+5. Create deployment script for packaging releases
+
+See `todo.md` for implementation tasks.
 
 ---
 
@@ -355,16 +454,17 @@ Log.Error(exception, "Error occurred");
 
 ### Documentation
 - `spec.md` - Complete product specification
-- `todo.md` - Milestone 4 task list (completed - all 4 milestones done!)
+- `todo.md` - Current development tasks
 - `CHANGELOG.md` - Completed milestones and features
 - `PATTERNS.md` - Development patterns and code examples
+- `ONEDRIVE_GUIDE_UPDATES.md` - OneDrive-based guide distribution system (no API required)
 - `TEST_PRODUCT_KEYS.txt` - Test product keys
 
 ### Core Components
-- **Services**: `LicenseValidator`, `SettingsService`, `ImageStorageService`, `AutoSaveService`, `ProgressTrackingService`, `TimerService`, `GuideExportService`, `GuideImportService`, `DatabaseBackupService`, `ErrorHandlingService`, `PerformanceMonitoringService`, `KeyboardShortcutService`
+- **Services**: `LicenseValidator`, `SettingsService`, `ImageStorageService`, `AutoSaveService`, `ProgressTrackingService`, `TimerService`, `GuideExportService`, `GuideImportService`, `DatabaseBackupService`, `ErrorHandlingService`, `PerformanceMonitoringService`, `KeyboardShortcutService`, `OneDriveGuideService`
 - **Repositories**: `UserRepository`, `GuideRepository`, `CategoryRepository`, `ProgressRepository`
 - **Entities**: `User`, `Guide`, `Step`, `Category`, `Progress`
-- **Models**: `ProgressStatistics`, `ProgressReportItem`, `GuideExport`, `ImportResult`, `BackupInfo`, `ErrorInfo`, `ErrorCategory`, `PerformanceMetric`
+- **Models**: `ProgressStatistics`, `ProgressReportItem`, `GuideExport`, `ImportResult`, `BackupInfo`, `ErrorInfo`, `ErrorCategory`, `PerformanceMetric`, `OneDriveGuideInfo`, `GuideUpdateInfo`
 - **ViewModels**: `ActivationViewModel`, `MainViewModel`, `GuidesViewModel`, `GuideEditorViewModel`, `CategoryManagementViewModel`, `ProgressDashboardViewModel`, `ProgressReportViewModel`
 - **Helpers**: `AnimationHelper`, `AccessibilityHelper`
 - **Pages**: `HomePage`, `GuidesPage`, `GuideEditorPage`, `GuideDetailPage`, `ProgressPage`, `ActiveGuideProgressPage`, `SettingsPage`, `AboutPage`

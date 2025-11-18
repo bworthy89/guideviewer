@@ -63,6 +63,38 @@ public sealed partial class SettingsPage : Page
         {
             await ProgressReportViewModel.InitializeAsync();
         }
+
+        // Check OneDrive status
+        UpdateOneDriveStatus();
+    }
+
+    /// <summary>
+    /// Updates the OneDrive status display.
+    /// </summary>
+    private void UpdateOneDriveStatus()
+    {
+        try
+        {
+            var oneDriveService = App.GetService<IOneDriveGuideService>();
+            var folderPath = oneDriveService.GetOneDriveFolderPath();
+
+            if (string.IsNullOrEmpty(folderPath))
+            {
+                OneDriveStatusTextBlock.Text = "OneDrive guide folder not found";
+            }
+            else if (oneDriveService.IsOneDriveFolderAvailable())
+            {
+                OneDriveStatusTextBlock.Text = $"Connected to: {folderPath}";
+            }
+            else
+            {
+                OneDriveStatusTextBlock.Text = $"OneDrive folder found but not accessible: {folderPath}";
+            }
+        }
+        catch
+        {
+            OneDriveStatusTextBlock.Text = "Error checking OneDrive status";
+        }
     }
 
     private async void AddCategory_Click(object sender, RoutedEventArgs e)
@@ -530,5 +562,186 @@ public sealed partial class SettingsPage : Page
         };
 
         await dialog.ShowAsync();
+    }
+
+    private async void SeedSampleDataButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            SeedSampleDataButton.IsEnabled = false;
+
+            // Get repositories
+            var categoryRepository = App.GetService<Data.Repositories.CategoryRepository>();
+            var guideRepository = App.GetService<Data.Repositories.GuideRepository>();
+
+            // Check if data already exists
+            var existingGuides = guideRepository.GetAll();
+            if (existingGuides.Any())
+            {
+                SeedDataInfoBar.Severity = InfoBarSeverity.Warning;
+                SeedDataInfoBar.Message = "Sample data already exists. The database is not empty.";
+                SeedDataInfoBar.Visibility = Visibility.Visible;
+                SeedDataInfoBar.IsOpen = true;
+                return;
+            }
+
+            // Seed sample data
+            await Task.Run(() =>
+            {
+                Core.Utilities.SampleDataSeeder.SeedSampleData(categoryRepository, guideRepository);
+            });
+
+            // Reload categories to show new data
+            await ViewModel.LoadCategoriesCommand.ExecuteAsync(null);
+
+            // Show success message
+            SeedDataInfoBar.Severity = InfoBarSeverity.Success;
+            SeedDataInfoBar.Message = "Sample data created successfully! 5 guides and 4 categories have been added.";
+            SeedDataInfoBar.Visibility = Visibility.Visible;
+            SeedDataInfoBar.IsOpen = true;
+
+            Log.Information("Sample data seeded successfully from Settings page");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to seed sample data from Settings page");
+
+            SeedDataInfoBar.Severity = InfoBarSeverity.Error;
+            SeedDataInfoBar.Message = $"Failed to seed sample data: {ex.Message}";
+            SeedDataInfoBar.Visibility = Visibility.Visible;
+            SeedDataInfoBar.IsOpen = true;
+        }
+        finally
+        {
+            SeedSampleDataButton.IsEnabled = true;
+        }
+    }
+
+    private void SeedDataInfoBar_Closed(InfoBar sender, InfoBarClosedEventArgs args)
+    {
+        SeedDataInfoBar.Visibility = Visibility.Collapsed;
+    }
+
+    /// <summary>
+    /// Checks for guide updates from OneDrive sync folder.
+    /// </summary>
+    private async void CheckForGuideUpdatesButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            CheckForGuideUpdatesButton.IsEnabled = false;
+            GuideUpdateProgressRing.IsActive = true;
+            GuideUpdateProgressRing.Visibility = Visibility.Visible;
+            GuideUpdateResultInfoBar.Visibility = Visibility.Collapsed;
+
+            var oneDriveService = App.GetService<IOneDriveGuideService>();
+
+            // First, check if OneDrive folder is available
+            if (!oneDriveService.IsOneDriveFolderAvailable())
+            {
+                var folderPath = oneDriveService.GetOneDriveFolderPath();
+                var message = string.IsNullOrEmpty(folderPath)
+                    ? "OneDrive guide folder not found. Please make sure OneDrive is syncing the 'GuideViewer_Guides' folder."
+                    : $"OneDrive guide folder not accessible at: {folderPath}";
+
+                GuideUpdateResultInfoBar.Title = "OneDrive Not Available";
+                GuideUpdateResultInfoBar.Message = message;
+                GuideUpdateResultInfoBar.Severity = InfoBarSeverity.Warning;
+                GuideUpdateResultInfoBar.Visibility = Visibility.Visible;
+                GuideUpdateResultInfoBar.IsOpen = true;
+
+                OneDriveStatusTextBlock.Text = "OneDrive folder not found";
+                return;
+            }
+
+            // Update status
+            var oneDrivePath = oneDriveService.GetOneDriveFolderPath();
+            OneDriveStatusTextBlock.Text = $"Scanning: {oneDrivePath}";
+
+            // Check for updates
+            var updates = await oneDriveService.CheckForGuideUpdatesAsync();
+
+            if (!updates.Any())
+            {
+                GuideUpdateResultInfoBar.Title = "No Updates Available";
+                GuideUpdateResultInfoBar.Message = "All guides are up to date!";
+                GuideUpdateResultInfoBar.Severity = InfoBarSeverity.Success;
+                GuideUpdateResultInfoBar.Visibility = Visibility.Visible;
+                GuideUpdateResultInfoBar.IsOpen = true;
+
+                OneDriveStatusTextBlock.Text = $"Connected to: {oneDrivePath} (No updates available)";
+                Log.Information("No guide updates found in OneDrive folder");
+                return;
+            }
+
+            // Show dialog with available updates
+            var dialog = new GuideUpdatesDialog(updates)
+            {
+                XamlRoot = this.XamlRoot
+            };
+
+            var result = await dialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary && dialog.SelectedGuides.Any())
+            {
+                // Import selected guides
+                int successCount = 0;
+                int failCount = 0;
+
+                foreach (var update in dialog.SelectedGuides)
+                {
+                    var importResult = await oneDriveService.ImportGuideFromOneDriveAsync(update.OneDriveGuide);
+                    if (importResult.Success)
+                        successCount++;
+                    else
+                        failCount++;
+                }
+
+                // Show result
+                var resultMessage = successCount > 0 && failCount == 0
+                    ? $"Successfully imported {successCount} guide(s)!"
+                    : successCount > 0 && failCount > 0
+                    ? $"Imported {successCount} guide(s), {failCount} failed."
+                    : $"Failed to import {failCount} guide(s).";
+
+                GuideUpdateResultInfoBar.Title = "Import Complete";
+                GuideUpdateResultInfoBar.Message = resultMessage;
+                GuideUpdateResultInfoBar.Severity = successCount > 0 ? InfoBarSeverity.Success : InfoBarSeverity.Error;
+                GuideUpdateResultInfoBar.Visibility = Visibility.Visible;
+                GuideUpdateResultInfoBar.IsOpen = true;
+
+                OneDriveStatusTextBlock.Text = $"Connected to: {oneDrivePath} (Last checked: {DateTime.Now:g})";
+
+                Log.Information("Guide import completed: {SuccessCount} succeeded, {FailCount} failed",
+                    successCount, failCount);
+            }
+            else
+            {
+                OneDriveStatusTextBlock.Text = $"Connected to: {oneDrivePath} (Last checked: {DateTime.Now:g})";
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error checking for guide updates from OneDrive");
+
+            GuideUpdateResultInfoBar.Title = "Error";
+            GuideUpdateResultInfoBar.Message = $"Failed to check for updates: {ex.Message}";
+            GuideUpdateResultInfoBar.Severity = InfoBarSeverity.Error;
+            GuideUpdateResultInfoBar.Visibility = Visibility.Visible;
+            GuideUpdateResultInfoBar.IsOpen = true;
+
+            OneDriveStatusTextBlock.Text = "Error checking for updates";
+        }
+        finally
+        {
+            CheckForGuideUpdatesButton.IsEnabled = true;
+            GuideUpdateProgressRing.IsActive = false;
+            GuideUpdateProgressRing.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    private void GuideUpdateResultInfoBar_Closed(InfoBar sender, InfoBarClosedEventArgs args)
+    {
+        GuideUpdateResultInfoBar.Visibility = Visibility.Collapsed;
     }
 }

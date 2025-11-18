@@ -50,7 +50,9 @@
                 </StackPanel>
 
                 <!-- Category Management Section (Admin Only) -->
-                <StackPanel Spacing="12" x:Name="CategoryManagementSection">
+                <StackPanel Spacing="12"
+                            x:Name="CategoryManagementSection"
+                            Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Text="Category Management" Style="{StaticResource SubtitleTextBlockStyle}"/>
 
                     <TextBlock
@@ -152,6 +154,39 @@
                     <TextBlock Text="Note: Categories in use by guides cannot be deleted"
                               Style="{StaticResource CaptionTextBlockStyle}"
                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+
+                <!-- Sample Data Section (Admin Only) -->
+                <StackPanel x:Name="SampleDataSection"
+                            Spacing="12"
+                            Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Text="Sample Data" Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <TextBlock
+                        Text="Quickly populate the database with sample guides and categories for testing"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                    <InfoBar
+                        x:Name="SeedDataInfoBar"
+                        Severity="Informational"
+                        IsClosable="True"
+                        Closed="SeedDataInfoBar_Closed"
+                        Visibility="Collapsed"/>
+
+                    <Button x:Name="SeedSampleDataButton"
+                            Click="SeedSampleDataButton_Click"
+                            Style="{StaticResource AccentButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon Glyph="&#xE710;" FontSize="16"/>
+                            <TextBlock Text="Seed Sample Data"/>
+                        </StackPanel>
+                    </Button>
+
+                    <TextBlock
+                        Text="This will create 5 sample guides and 4 categories if the database is empty"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                 </StackPanel>
 
                 <!-- About Section -->
@@ -367,7 +402,10 @@
                 </StackPanel>
 
                 <!-- Data Management Section (Admin Only) -->
-                <StackPanel x:Name="DataManagementSection" Spacing="12" Margin="0,24,0,0">
+                <StackPanel x:Name="DataManagementSection"
+                            Spacing="12"
+                            Margin="0,24,0,0"
+                            Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock Text="Data Management" Style="{StaticResource SubtitleTextBlockStyle}"/>
 
                     <TextBlock
@@ -520,6 +558,67 @@
                                 Visibility="Collapsed"
                                 IsClosable="True"
                                 Closed="BackupResultInfoBar_Closed"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Guide Updates Section (All Users) -->
+                <StackPanel x:Name="GuideUpdatesSection"
+                            Spacing="12"
+                            Margin="0,24,0,0">
+                    <TextBlock Text="Guide Updates" Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                    <TextBlock
+                        Text="Check for new or updated guides from OneDrive sync folder"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+
+                    <!-- OneDrive Guide Updates -->
+                    <Border
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16">
+                        <StackPanel Spacing="12">
+                            <TextBlock Text="OneDrive Guide Sync" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                            <TextBlock
+                                Text="Automatically discovers new guides from your OneDrive sync folder"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                TextWrapping="Wrap"/>
+
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button
+                                    x:Name="CheckForGuideUpdatesButton"
+                                    Click="CheckForGuideUpdatesButton_Click"
+                                    Style="{StaticResource AccentButtonStyle}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE896;" FontSize="16"/>
+                                        <TextBlock Text="Check for Guide Updates"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <ProgressRing
+                                    x:Name="GuideUpdateProgressRing"
+                                    Width="24"
+                                    Height="24"
+                                    IsActive="False"
+                                    Visibility="Collapsed"/>
+                            </StackPanel>
+
+                            <!-- OneDrive Status -->
+                            <TextBlock
+                                x:Name="OneDriveStatusTextBlock"
+                                Style="{StaticResource CaptionTextBlockStyle}"
+                                Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+
+                            <!-- Guide Update Result -->
+                            <InfoBar
+                                x:Name="GuideUpdateResultInfoBar"
+                                Visibility="Collapsed"
+                                IsClosable="True"
+                                Closed="GuideUpdateResultInfoBar_Closed"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>

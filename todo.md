@@ -1,3 +1,312 @@
+# Current Development Tasks
+
+## OneDrive Guide Updates & Squirrel.Windows Auto-Update
+
+**Status**: 🚧 **IN PROGRESS**
+**Started**: 2025-11-17
+
+---
+
+## Phase 1: OneDrive Guide Updates - ✅ IMPLEMENTATION COMPLETE
+
+**Status**: ✅ Implementation Complete (Testing Required)
+**Estimated Time**: 3-4 hours (Actual: ~3 hours)
+
+### Tasks
+
+#### Service Implementation
+- [x] Create `IOneDriveGuideService.cs` interface
+  - [x] Method: GetOneDriveFolderPath() - Detects sync folder
+  - [x] Method: IsOneDriveFolderAvailable() - Checks folder accessibility
+  - [x] Method: GetAvailableGuidesAsync() - Scans for ZIP packages
+  - [x] Method: CheckForGuideUpdatesAsync() - Compares with local database
+  - [x] Method: ImportGuideFromOneDriveAsync() - Imports guide package
+  - [x] Method: StartMonitoring()/StopMonitoring() - FileSystemWatcher
+  - [x] Event: GuideUpdatesDetected
+
+- [x] Create `OneDriveGuideService.cs` implementation
+  - [x] Multi-method folder detection (registry/environment/common paths)
+  - [x] ZIP metadata extraction (guide.json parsing)
+  - [x] New vs Updated detection by LastModified date
+  - [x] Integration with IGuideImportService
+  - [x] Optional FileSystemWatcher with debouncing
+  - [x] Comprehensive error logging
+
+- [x] Create models in IOneDriveGuideService.cs
+  - [x] OneDriveGuideInfo (FileName, FullPath, FileSize, LastModified, GuideId, Title, Version)
+  - [x] GuideUpdateInfo (OneDriveGuide, UpdateType, LocalVersion)
+  - [x] GuideUpdateType enum (New, Updated)
+  - [x] GuideUpdateDetectedEventArgs
+
+#### UI Implementation
+- [x] Update `SettingsPage.xaml`
+  - [x] "Guide Updates" section (visible to all users)
+  - [x] "OneDrive Guide Sync" card
+  - [x] "Check for Guide Updates" button (AccentButtonStyle)
+  - [x] OneDrive status TextBlock
+  - [x] Progress ring for checking
+  - [x] InfoBar for results
+
+- [x] Update `SettingsPage.xaml.cs`
+  - [x] CheckForGuideUpdatesButton_Click handler
+  - [x] OnNavigatedTo: UpdateOneDriveStatus() method
+  - [x] GuideUpdateResultInfoBar_Closed handler
+  - [x] Error handling for unavailable OneDrive folder
+
+- [x] Create `GuideUpdatesDialog.xaml`
+  - [x] ItemsRepeater for guide list
+  - [x] CheckBox for each guide (all selected by default)
+  - [x] "Select All" / "Select None" buttons
+  - [x] Update badges (NEW vs UPDATED)
+  - [x] Summary info at bottom
+
+- [x] Create `GuideUpdatesDialog.xaml.cs`
+  - [x] SelectAll/SelectNone button handlers
+  - [x] UpdateCheckBox_Changed handler
+  - [x] UpdateSelectedGuides() method
+  - [x] UpdateSummary() method
+  - [x] FindCheckBox() helper for navigating visual tree
+
+#### Service Registration
+- [x] Register IOneDriveGuideService as Singleton in App.xaml.cs
+
+#### Documentation
+- [x] Create `ONEDRIVE_GUIDE_UPDATES.md` comprehensive guide
+  - [x] Architecture diagrams
+  - [x] Setup instructions for IT admins
+  - [x] Setup instructions for field technicians
+  - [x] Deployment workflow
+  - [x] Troubleshooting section
+  - [x] Security considerations
+
+- [x] Update `CLAUDE.md`
+  - [x] Add OneDriveGuideService to services lists
+  - [x] Add new models to Core section
+  - [x] Add "Guide Distribution System" section
+  - [x] Add ONEDRIVE_GUIDE_UPDATES.md to documentation list
+
+### Testing Required
+
+#### Unit Tests (Planned - 0/12)
+- [ ] Create `OneDriveGuideServiceTests.cs`
+  - [ ] Test OneDrive folder detection (registry method)
+  - [ ] Test OneDrive folder detection (environment variable method)
+  - [ ] Test folder detection when not available
+  - [ ] Test GetAvailableGuidesAsync() - scans ZIP files
+  - [ ] Test CheckForGuideUpdatesAsync() - detects new guides
+  - [ ] Test CheckForGuideUpdatesAsync() - detects updated guides
+  - [ ] Test ImportGuideFromOneDriveAsync() - success case
+  - [ ] Test ImportGuideFromOneDriveAsync() - invalid ZIP
+  - [ ] Test metadata extraction from ZIP
+  - [ ] Test FileSystemWatcher debouncing
+  - [ ] Test GuideUpdatesDetected event
+  - [ ] Test with no OneDrive folder present
+
+#### Integration Tests (Planned - 0/5)
+- [ ] Create `OneDriveGuideIntegrationTests.cs`
+  - [ ] Test complete workflow: scan → detect → import
+  - [ ] Test multiple guides import
+  - [ ] Test update detection after guide modification
+  - [ ] Test category auto-creation on import
+  - [ ] Test with real OneDrive folder (if available)
+
+#### Manual Testing (Required - Visual Studio 2022)
+- [ ] Setup SharePoint test folder: GuideViewer_Guides/Guides/
+- [ ] Create test guide ZIP packages
+- [ ] Sync folder to OneDrive on test PC
+- [ ] Verify folder detection on test PC
+- [ ] Test "Check for Guide Updates" button
+- [ ] Verify dialog shows available guides
+- [ ] Test "Select All" / "Select None" buttons
+- [ ] Test guide import workflow
+- [ ] Verify imported guides appear in Guides list
+- [ ] Test update detection for modified guides
+- [ ] Test with OneDrive folder not synced
+- [ ] Test with invalid ZIP files
+- [ ] Test with missing OneDrive folder
+
+### Phase 1 Summary
+✅ **IMPLEMENTATION COMPLETE** - Testing in progress
+- 2 new service files (interface + implementation)
+- 4 new models (OneDriveGuideInfo, GuideUpdateInfo, GuideUpdateType, GuideUpdateDetectedEventArgs)
+- 1 new dialog (GuideUpdatesDialog.xaml/.cs)
+- SettingsPage updated with Guide Updates section
+- ONEDRIVE_GUIDE_UPDATES.md documentation created
+- CLAUDE.md updated
+- **Next**: Unit tests, integration tests, manual testing
+
+---
+
+## Phase 2: Squirrel.Windows Auto-Update System - 📋 PLANNED
+
+**Status**: 📋 Not Started
+**Estimated Time**: 5-7 hours
+**Purpose**: Application updates (not guide content - that uses OneDrive)
+
+### Architecture
+
+**Dual System Approach**:
+- **OneDrive**: Guide content updates (frequent, small, no restart)
+- **Squirrel.Windows**: App executable updates (infrequent, large, requires restart)
+
+### Tasks
+
+#### Prerequisites
+- [ ] Install Squirrel tooling: `dotnet tool install --global Clowd.Squirrel`
+- [ ] Add NuGet package: `Clowd.Squirrel` to GuideViewer.csproj
+- [ ] Create test code signing certificate (optional, for SmartScreen bypass)
+
+#### Update Service Implementation
+- [ ] Create `IUpdateService.cs` interface in `GuideViewer.Core/Services/`
+  - [ ] Method: CheckForUpdatesAsync() → Returns UpdateInfo?
+  - [ ] Method: DownloadUpdateAsync() → Returns progress updates
+  - [ ] Method: ApplyUpdateAsync() → Installs update, schedules restart
+  - [ ] Property: CurrentVersion (from assembly)
+  - [ ] Property: UpdateAvailable (bool)
+  - [ ] Event: UpdateCheckCompleted
+  - [ ] Event: UpdateDownloadProgress
+
+- [ ] Create `UpdateService.cs` implementation
+  - [ ] Initialize Squirrel UpdateManager with URL
+  - [ ] CheckForUpdatesAsync() using UpdateManager.CheckForUpdate()
+  - [ ] DownloadUpdateAsync() with progress reporting
+  - [ ] ApplyUpdateAsync() using UpdateManager.ApplyReleases()
+  - [ ] GetReleaseNotesAsync() for displaying changelog
+  - [ ] Handle network errors gracefully
+  - [ ] Serilog logging integration
+
+- [ ] Create `UpdateInfo.cs` model
+  - [ ] Properties: CurrentVersion, NewVersion, ReleaseNotes
+  - [ ] Properties: DownloadSize, ReleasesCount
+  - [ ] Properties: IsSecurityUpdate, IsBreakingChange
+  - [ ] Method: GetSummary()
+
+#### Configuration
+- [ ] Create `SquirrelConfig.cs` for settings
+  - [ ] UpdateUrl property (SharePoint or file share)
+  - [ ] CheckInterval property (default 4 hours)
+  - [ ] AutoInstall property (default false)
+  - [ ] CheckOnStartup property (default true)
+
+#### UI Integration
+- [ ] Update `SettingsPage.xaml` with "Application Updates" section
+  - [ ] Current version display
+  - [ ] Last checked timestamp
+  - [ ] "Check for Updates" button
+  - [ ] Update available notification
+  - [ ] "Download and Install" button
+  - [ ] Progress bar for download
+  - [ ] Release notes display
+  - [ ] "Restart Now" button after update download
+
+- [ ] Update `SettingsPage.xaml.cs`
+  - [ ] CheckForAppUpdatesButton_Click handler
+  - [ ] DownloadUpdateButton_Click handler
+  - [ ] RestartNowButton_Click handler
+  - [ ] Progress update handlers
+  - [ ] OnNavigatedTo: Check for updates on startup (if enabled)
+
+- [ ] Create `UpdateNotificationDialog.xaml`
+  - [ ] Shows update details (version, size, release notes)
+  - [ ] "Install Now" vs "Later" options
+  - [ ] Optional "Remind Me Tomorrow" checkbox
+
+#### Background Update Checking
+- [ ] Add startup check in MainWindow.xaml.cs
+  - [ ] OnLoaded: Check for updates (silent, no UI)
+  - [ ] If update available: Show InfoBar with "Update Available"
+  - [ ] InfoBar action: Navigate to Settings > Application Updates
+
+- [ ] Add periodic background checking (optional)
+  - [ ] Timer-based check every 4 hours
+  - [ ] Only check when app is idle (no active operations)
+  - [ ] Show notification badge on Settings nav item
+
+#### Deployment Scripts
+- [ ] Create `Deploy-AppUpdate.ps1` PowerShell script
+  - [ ] Build GuideViewer in Release mode
+  - [ ] Package with Squirrel: `squirrel pack ...`
+  - [ ] Generate RELEASES file
+  - [ ] Upload to SharePoint/file share
+  - [ ] Option to sign with code signing certificate
+  - [ ] Backup previous releases
+
+- [ ] Create `DEPLOYMENT.md` documentation
+  - [ ] Step-by-step guide for IT admins
+  - [ ] How to publish new releases
+  - [ ] How to rollback to previous version
+  - [ ] SharePoint folder structure
+  - [ ] Code signing certificate setup (optional)
+
+#### Service Registration
+- [ ] Register IUpdateService as Singleton in App.xaml.cs
+
+#### Testing
+
+##### Unit Tests (Planned - 0/8)
+- [ ] Create `UpdateServiceTests.cs`
+  - [ ] Test CheckForUpdatesAsync() - no update available
+  - [ ] Test CheckForUpdatesAsync() - update available
+  - [ ] Test version comparison logic
+  - [ ] Test GetReleaseNotesAsync()
+  - [ ] Test error handling (network failure)
+  - [ ] Test UpdateInfo.GetSummary()
+  - [ ] Test configuration loading
+  - [ ] Test event firing
+
+##### Integration Tests (Planned - 0/3)
+- [ ] Create `UpdateIntegrationTests.cs`
+  - [ ] Test complete update workflow (check → download → apply)
+  - [ ] Test with mock Squirrel server
+  - [ ] Test rollback scenario
+
+##### Manual Testing (Required)
+- [ ] Create test Squirrel package
+- [ ] Upload to test SharePoint folder
+- [ ] Test update detection on test PC
+- [ ] Test download progress display
+- [ ] Test update installation
+- [ ] Verify app restarts after update
+- [ ] Test "Remind Me Later" functionality
+- [ ] Test background update checking
+- [ ] Test with no internet connection
+- [ ] Test with invalid update URL
+
+### Phase 2 Summary
+📋 **PLANNED** - Not started
+- IUpdateService interface
+- UpdateService implementation with Squirrel integration
+- UpdateInfo model
+- Settings page UI for app updates
+- UpdateNotificationDialog
+- Background update checking
+- Deploy-AppUpdate.ps1 script
+- DEPLOYMENT.md documentation
+- 11 unit/integration tests planned
+- Manual testing workflow
+
+---
+
+## Success Criteria
+
+### OneDrive Guide Updates
+- [x] Service implementation complete
+- [x] UI integration complete
+- [x] Documentation complete (ONEDRIVE_GUIDE_UPDATES.md)
+- [ ] 17 tests passing (12 unit + 5 integration)
+- [ ] Manual testing complete on test PC
+- [ ] SharePoint folder structure set up
+
+### Squirrel.Windows Updates
+- [ ] Service implementation complete
+- [ ] UI integration complete
+- [ ] Documentation complete (DEPLOYMENT.md)
+- [ ] 11 tests passing (8 unit + 3 integration)
+- [ ] Manual testing complete with test update
+- [ ] Deployment script working
+
+---
+
 # Milestone 4: Polish, Performance & Data Management
 
 **Status**: ✅ **COMPLETE** - All 6 Phases Done!

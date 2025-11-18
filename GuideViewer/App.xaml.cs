@@ -111,6 +111,7 @@ public partial class App : Application
         services.AddSingleton<GuideViewer.Core.Services.IGuideExportService, GuideViewer.Core.Services.GuideExportService>();
         services.AddSingleton<GuideViewer.Core.Services.IGuideImportService, GuideViewer.Core.Services.GuideImportService>();
         services.AddSingleton<GuideViewer.Core.Services.IDatabaseBackupService, GuideViewer.Core.Services.DatabaseBackupService>();
+        services.AddSingleton<GuideViewer.Core.Services.IOneDriveGuideService, GuideViewer.Core.Services.OneDriveGuideService>();
 
         // UI services - Singleton for application lifetime
         services.AddSingleton<GuideViewer.Services.NavigationService>();
