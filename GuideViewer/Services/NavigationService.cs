@@ -99,4 +99,5 @@ public static class PageKeys
     public const string Progress = "Progress";
     public const string ActiveGuide = "ActiveGuide";
     public const string Settings = "Settings";
+    public const string About = "About";
 }

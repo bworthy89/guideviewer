@@ -32,6 +32,9 @@
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8F1;"/>
                     </NavigationViewItem.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Browse guides (Ctrl+F)"/>
+                    </ToolTipService.ToolTip>
                 </NavigationViewItem>
 
                 <!-- Progress Dashboard -->
@@ -55,6 +58,9 @@
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE710;"/>
                     </NavigationViewItem.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Create new guide (Ctrl+N)"/>
+                    </ToolTipService.ToolTip>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
 
@@ -67,6 +73,22 @@
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE713;"/>
                     </NavigationViewItem.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="Settings (Ctrl+B/E/I)"/>
+                    </ToolTipService.ToolTip>
+                </NavigationViewItem>
+
+                <!-- About -->
+                <NavigationViewItem
+                    x:Name="AboutNavItem"
+                    Content="About"
+                    Tag="About">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE946;"/>
+                    </NavigationViewItem.Icon>
+                    <ToolTipService.ToolTip>
+                        <ToolTip Content="About GuideViewer (F1)"/>
+                    </ToolTipService.ToolTip>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>
 

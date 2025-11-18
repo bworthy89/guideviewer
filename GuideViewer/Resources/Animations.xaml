@@ -1,0 +1,81 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Page Entrance Animation -->
+    <Storyboard x:Key="PageEntranceAnimation">
+        <DoubleAnimation
+            Storyboard.TargetProperty="Opacity"
+            From="0"
+            To="1"
+            Duration="0:0:0.3"
+            EnableDependentAnimation="True"/>
+        <DoubleAnimation
+            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+            From="20"
+            To="0"
+            Duration="0:0:0.3"
+            EnableDependentAnimation="True">
+            <DoubleAnimation.EasingFunction>
+                <CubicEase EasingMode="EaseOut"/>
+            </DoubleAnimation.EasingFunction>
+        </DoubleAnimation>
+    </Storyboard>
+
+    <!-- Card Hover Animation -->
+    <Storyboard x:Key="CardHoverEnter">
+        <DoubleAnimation
+            Storyboard.TargetProperty="(UIElement.Translation).Y"
+            To="-4"
+            Duration="0:0:0.2"
+            EnableDependentAnimation="True">
+            <DoubleAnimation.EasingFunction>
+                <CubicEase EasingMode="EaseOut"/>
+            </DoubleAnimation.EasingFunction>
+        </DoubleAnimation>
+    </Storyboard>
+
+    <Storyboard x:Key="CardHoverExit">
+        <DoubleAnimation
+            Storyboard.TargetProperty="(UIElement.Translation).Y"
+            To="0"
+            Duration="0:0:0.2"
+            EnableDependentAnimation="True">
+            <DoubleAnimation.EasingFunction>
+                <CubicEase EasingMode="EaseOut"/>
+            </DoubleAnimation.EasingFunction>
+        </DoubleAnimation>
+    </Storyboard>
+
+    <!-- Button Press Animation -->
+    <Storyboard x:Key="ButtonPressAnimation">
+        <DoubleAnimation
+            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+            To="0.95"
+            Duration="0:0:0.1"
+            AutoReverse="True"
+            EnableDependentAnimation="True"/>
+        <DoubleAnimation
+            Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+            To="0.95"
+            Duration="0:0:0.1"
+            AutoReverse="True"
+            EnableDependentAnimation="True"/>
+    </Storyboard>
+
+    <!-- Loading Animation -->
+    <Storyboard x:Key="PulseAnimation" RepeatBehavior="Forever">
+        <DoubleAnimation
+            Storyboard.TargetProperty="Opacity"
+            From="0.5"
+            To="1"
+            Duration="0:0:1"
+            AutoReverse="True"
+            EnableDependentAnimation="True">
+            <DoubleAnimation.EasingFunction>
+                <SineEase EasingMode="EaseInOut"/>
+            </DoubleAnimation.EasingFunction>
+        </DoubleAnimation>
+    </Storyboard>
+
+</ResourceDictionary>

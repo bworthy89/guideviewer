@@ -6,7 +6,15 @@
       "Bash(dotnet add:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(dotnet build:*)",
+      "Bash(cat:*)",
+      "mcp__serena__find_file",
+      "mcp__serena__get_symbols_overview",
+      "mcp__serena__find_symbol",
+      "mcp__serena__write_memory",
+      "Bash(dotnet test:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

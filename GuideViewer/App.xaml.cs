@@ -38,6 +38,9 @@ public partial class App : Application
         // Build dependency injection container
         Services = ConfigureServices();
 
+        // Set up global error handling
+        this.UnhandledException += OnUnhandledException;
+
         // Log application startup
         Log.Information("GuideViewer application starting...");
 
@@ -111,6 +114,9 @@ public partial class App : Application
 
         // UI services - Singleton for application lifetime
         services.AddSingleton<GuideViewer.Services.NavigationService>();
+        services.AddSingleton<GuideViewer.Services.IKeyboardShortcutService, GuideViewer.Services.KeyboardShortcutService>();
+        services.AddSingleton<GuideViewer.Core.Services.IErrorHandlingService, GuideViewer.Core.Services.ErrorHandlingService>();
+        services.AddSingleton<GuideViewer.Core.Services.IPerformanceMonitoringService, GuideViewer.Core.Services.PerformanceMonitoringService>();
 
         // ViewModels - Singleton for application lifetime
         services.AddSingleton<GuideViewer.ViewModels.MainViewModel>();
@@ -161,6 +167,52 @@ public partial class App : Application
         {
             Log.Error(ex, "Failed to launch application window");
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Handles unhandled exceptions at the application level.
+    /// </summary>
+    private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        try
+        {
+            // Get the error handling service
+            var errorHandlingService = Services.GetService<GuideViewer.Core.Services.IErrorHandlingService>();
+
+            if (errorHandlingService != null)
+            {
+                // Handle the exception
+                var errorInfo = errorHandlingService.HandleException(e.Exception, "Unhandled Application Error");
+
+                // Mark as handled if recoverable to prevent app crash
+                if (errorInfo.IsRecoverable)
+                {
+                    e.Handled = true;
+                    Log.Information("Unhandled exception was marked as recoverable and handled");
+
+                    // Show error dialog on UI thread
+                    MainWindow?.DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        await errorHandlingService.ShowErrorDialogAsync(errorInfo);
+                    });
+                }
+                else
+                {
+                    // Log fatal error and let app crash
+                    Log.Fatal(e.Exception, "Unrecoverable error occurred. Application will terminate.");
+                }
+            }
+            else
+            {
+                // Fallback logging if service not available
+                Log.Error(e.Exception, "Unhandled exception occurred and error handling service is not available");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Last resort logging
+            Log.Fatal(ex, "Failed to handle unhandled exception");
         }
     }
 
